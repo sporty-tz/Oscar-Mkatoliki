@@ -1,0 +1,89 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap");
+
+/* Tailwind - skip preflight to avoid conflicts with Bootstrap */
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
+
+/* ===== Original template CSS ===== */
+@import "./styles/main.css";
+@import "./styles/home-grid.css";
+
+/*
+ * Override Tailwind container to match Bootstrap 5 breakpoints.
+ * Tailwind v4 theme imports its own .container utility which conflicts
+ * with Bootstrap's .container max-widths.
+ */
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px !important;
+  }
+}
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px !important;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px !important;
+  }
+}
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px !important;
+  }
+}
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1320px !important;
+  }
+}
+
+/* Style native <select> inside header-top to match original nice-select */
+.header-select select {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 18px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='white'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right center;
+}
+.header-select select option {
+  color: #333;
+  background: #fff;
+}
+
+.nav-select select {
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 20px;
+  padding-right: 16px;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23646c77'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right center;
+}
+
+.nav-select select option {
+  color: #333;
+  background: #fff;
+}
+
+.tab-link {
+  border: none;
+  padding: 0;
+  background: transparent;
+}
