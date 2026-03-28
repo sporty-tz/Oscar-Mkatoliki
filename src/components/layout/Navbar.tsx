@@ -232,13 +232,7 @@ export default function Navbar() {
                   </a>
                   <ul className="dropdown-position-list">
                     <li>
-                      <Link to="/blog">Blog Grid</Link>
-                    </li>
-                    <li>
-                      <Link to="/blog/standard">Editorial Feed</Link>
-                    </li>
-                    <li>
-                      <Link to="/blog/details-1">Featured Story</Link>
+                      <Link to="/blog">Blog</Link>
                     </li>
                     <li>
                       <Link to="/blog/author/1">Author Spotlight</Link>

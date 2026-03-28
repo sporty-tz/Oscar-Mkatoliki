@@ -61,9 +61,7 @@ const navItems = [
     icon: "icofont-book-alt",
     label: "Blog",
     children: [
-      { label: "blog grid", to: "/blog" },
-      { label: "editorial feed", to: "/blog/standard" },
-      { label: "featured story", to: "/blog/details-1" },
+      { label: "blog", to: "/blog" },
       { label: "author spotlight", to: "/blog/author/1" },
     ],
   },

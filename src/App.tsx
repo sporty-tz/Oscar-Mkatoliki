@@ -24,7 +24,6 @@ const Invoice = lazy(() => import("./pages/Invoice"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Wallet = lazy(() => import("./pages/Wallet"));
 const BlogGrid = lazy(() => import("./pages/BlogGrid"));
-const BlogStandard = lazy(() => import("./pages/BlogStandard"));
 const BlogDetails = lazy(() => import("./pages/BlogDetails"));
 const BlogAuthor = lazy(() => import("./pages/BlogAuthor"));
 const Login = lazy(() => import("./pages/Login"));
@@ -77,7 +76,6 @@ export default function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/wallet" element={<Wallet />} />
             <Route path="/blog" element={<BlogGrid />} />
-            <Route path="/blog/standard" element={<BlogStandard />} />
             <Route path="/blog/:slug" element={<BlogDetails />} />
             <Route path="/blog/author/:id" element={<BlogAuthor />} />
           </Route>

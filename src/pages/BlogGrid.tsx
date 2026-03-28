@@ -88,14 +88,6 @@ export default function BlogGrid() {
                     <option value="recommend">recommend</option>
                   </select>
                 </div>
-                <div className="filter-action">
-                  <Link to="/blog" className="active" title="Grid View">
-                    <i className="fas fa-th" />
-                  </Link>
-                  <Link to="/blog/standard" title="List View">
-                    <i className="fas fa-th-list" />
-                  </Link>
-                </div>
               </div>
 
               {loading && <p>Loading posts…</p>}
