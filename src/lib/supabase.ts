@@ -814,7 +814,6 @@ export async function loadBlogAuthor(slug: string): Promise<BlogAuthor | null> {
     .from("blog_authors")
     .select("id,name,slug,bio,avatar_url,email,social_links")
     .eq("slug", slug)
-    .eq("is_active", true)
     .single();
   if (error) {
     console.error("loadBlogAuthor", error);
@@ -848,7 +847,6 @@ export async function loadBlogComments(postId: string): Promise<BlogComment[]> {
     .from("blog_comments")
     .select("id,post_id,author_name,comment,created_at")
     .eq("post_id", postId)
-    .eq("is_approved", true)
     .order("created_at", { ascending: true });
   if (error) {
     console.error("loadBlogComments", error);

@@ -3,12 +3,9 @@ import { Link, useParams } from "react-router-dom";
 import {
   loadBlogPost,
   loadBlogComments,
-  loadBlogPosts,
-  loadBlogCategories,
   submitBlogComment,
   type BlogPost,
   type BlogComment,
-  type BlogCategory,
 } from "../lib/supabase";
 import "@/styles/blog-details.css";
 
@@ -25,8 +22,6 @@ export default function BlogDetails() {
   const { slug } = useParams<{ slug: string }>();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [comments, setComments] = useState<BlogComment[]>([]);
-  const [recentPosts, setRecentPosts] = useState<BlogPost[]>([]);
-  const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [commentText, setCommentText] = useState("");
   const [commentName, setCommentName] = useState("");
@@ -41,15 +36,9 @@ export default function BlogDetails() {
     setPost(null);
     setComments([]);
     (async () => {
-      const [postData, recentData, catData] = await Promise.all([
-        loadBlogPost(slug),
-        loadBlogPosts(5),
-        loadBlogCategories(),
-      ]);
+      const postData = await loadBlogPost(slug);
       if (!mounted) return;
       setPost(postData);
-      setRecentPosts(recentData.filter((p) => p.slug !== slug));
-      setCategories(catData);
       if (postData) {
         const commentData = await loadBlogComments(postData.id);
         if (mounted) setComments(commentData);
@@ -127,8 +116,7 @@ export default function BlogDetails() {
       <section className="inner-section blog-details-part">
         <div className="container">
           <div className="row">
-            {/* ── Main Content ── */}
-            <div className="col-lg-8">
+            <div className="col-lg-12">
               <article className="blog-details">
                 {post.featured_image_url && (
                   <div className="blog-details-thumb">
@@ -439,103 +427,6 @@ export default function BlogDetails() {
                   </div>
                 </div>
               </form>
-            </div>
-
-            {/* ── Sidebar ── */}
-            <div className="col-md-7 col-lg-4">
-              {/* Recent Posts */}
-              {recentPosts.length > 0 && (
-                <div className="blog-widget">
-                  <h4 className="blog-widget-title">Recent Posts</h4>
-                  <ul className="blog-widget-feed">
-                    {recentPosts.map((rp) => (
-                      <li key={rp.id}>
-                        <Link to={`/blog/${rp.slug}`}>
-                          <img
-                            src={rp.featured_image_url || "/images/blog/01.jpg"}
-                            alt={rp.title}
-                          />
-                          <div>
-                            <h6>{rp.title}</h6>
-                            <span>{formatDate(rp.published_at)}</span>
-                          </div>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Categories */}
-              {categories.length > 0 && (
-                <div className="blog-widget">
-                  <h4 className="blog-widget-title">Categories</h4>
-                  <ul className="blog-widget-category">
-                    {categories.map((cat) => (
-                      <li key={cat.id}>
-                        <Link to="/blog">{cat.name}</Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Tags */}
-              {tags.length > 0 && (
-                <div className="blog-widget">
-                  <h4 className="blog-widget-title">Tags</h4>
-                  <ul className="blog-widget-tag">
-                    {tags.map((tag) => (
-                      <li key={tag}>
-                        <a href="#">{tag}</a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Share */}
-              <div className="blog-widget">
-                <h4 className="blog-widget-title">Share Article</h4>
-                <ul className="blog-widget-social">
-                  <li>
-                    <a
-                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="icofont-facebook"
-                      title="Facebook"
-                    />
-                  </li>
-                  <li>
-                    <a
-                      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(post.title)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="icofont-twitter"
-                      title="Twitter"
-                    />
-                  </li>
-                  <li>
-                    <a
-                      href={`https://wa.me/?text=${encodeURIComponent(post.title + " " + window.location.href)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="icofont-whatsapp"
-                      title="WhatsApp"
-                    />
-                  </li>
-                  <li>
-                    <a
-                      href={author?.social_links?.instagram || "#"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="icofont-instagram"
-                      title="Instagram"
-                    />
-                  </li>
-                </ul>
-              </div>
             </div>
           </div>
         </div>
