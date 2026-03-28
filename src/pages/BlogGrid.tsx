@@ -188,22 +188,47 @@ export default function BlogGrid() {
 
               <div className="blog-widget">
                 <h4 className="blog-widget-title">popular feeds</h4>
-                <ul className="blog-widget-feed">
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "12px",
+                  }}
+                >
                   {recentPosts.map((post) => (
-                    <li key={post.id}>
-                      <Link to={`/blog/${post.slug}`}>
-                        <img
-                          src={post.featured_image_url || "/images/blog/01.jpg"}
-                          alt={post.title}
-                        />
-                        <div>
-                          <h6>{post.title}</h6>
-                          <span>{formatDate(post.published_at)}</span>
-                        </div>
-                      </Link>
-                    </li>
+                    <Link
+                      key={post.id}
+                      to={`/blog/${post.slug}`}
+                      style={{ display: "block", textDecoration: "none" }}
+                    >
+                      <img
+                        src={post.featured_image_url || "/images/blog/01.jpg"}
+                        alt={post.title}
+                        style={{
+                          width: "100%",
+                          aspectRatio: "4/3",
+                          objectFit: "cover",
+                          borderRadius: "6px",
+                          display: "block",
+                          marginBottom: "6px",
+                        }}
+                      />
+                      <h6
+                        style={{
+                          fontSize: "12px",
+                          lineHeight: "1.4",
+                          margin: "0 0 4px",
+                          color: "#3d3d3d",
+                        }}
+                      >
+                        {post.title}
+                      </h6>
+                      <span style={{ fontSize: "11px", color: "#888" }}>
+                        {formatDate(post.published_at)}
+                      </span>
+                    </Link>
                   ))}
-                </ul>
+                </div>
               </div>
 
               <div className="blog-widget">
