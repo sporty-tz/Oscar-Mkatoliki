@@ -235,7 +235,9 @@ export default function Navbar() {
                       <Link to="/blog">Blog</Link>
                     </li>
                     <li>
-                      <Link to="/blog/author/1">Author Spotlight</Link>
+                      <Link to="/blog/author/fr-oscar-mkatoliki">
+                        Author Spotlight
+                      </Link>
                     </li>
                   </ul>
                 </li>

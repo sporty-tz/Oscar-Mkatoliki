@@ -32,17 +32,20 @@ export default function BlogAuthor() {
     if (!id) return;
     let mounted = true;
     (async () => {
-      const [authorData, postData, recentData, catData] = await Promise.all([
-        loadBlogAuthor(id),
-        loadBlogPostsByAuthor(id),
-        loadBlogPosts(5),
-        loadBlogCategories(),
-      ]);
+      const authorData = await loadBlogAuthor(id); // id is the slug from URL
       if (!mounted) return;
       setAuthor(authorData);
-      setAuthorPosts(postData);
-      setRecentPosts(recentData);
-      setCategories(catData);
+      if (authorData) {
+        const [postData, recentData, catData] = await Promise.all([
+          loadBlogPostsByAuthor(authorData.id), // use actual UUID
+          loadBlogPosts(6),
+          loadBlogCategories(),
+        ]);
+        if (!mounted) return;
+        setAuthorPosts(postData);
+        setRecentPosts(recentData);
+        setCategories(catData);
+      }
       setLoading(false);
     })();
     return () => {

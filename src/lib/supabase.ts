@@ -809,11 +809,11 @@ export async function loadBlogCategories(): Promise<BlogCategory[]> {
   return data as BlogCategory[];
 }
 
-export async function loadBlogAuthor(id: string): Promise<BlogAuthor | null> {
+export async function loadBlogAuthor(slug: string): Promise<BlogAuthor | null> {
   const { data, error } = await supabase
     .from("blog_authors")
     .select("id,name,slug,bio,avatar_url,email,social_links")
-    .eq("id", id)
+    .eq("slug", slug)
     .eq("is_active", true)
     .single();
   if (error) {

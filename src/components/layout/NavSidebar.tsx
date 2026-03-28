@@ -62,7 +62,7 @@ const navItems = [
     label: "Blog",
     children: [
       { label: "blog", to: "/blog" },
-      { label: "author spotlight", to: "/blog/author/1" },
+      { label: "author spotlight", to: "/blog/author/fr-oscar-mkatoliki" },
     ],
   },
 ];

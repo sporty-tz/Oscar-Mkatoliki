@@ -3,9 +3,12 @@ import { Link, useParams } from "react-router-dom";
 import {
   loadBlogPost,
   loadBlogComments,
+  loadBlogPosts,
+  loadBlogCategories,
   submitBlogComment,
   type BlogPost,
   type BlogComment,
+  type BlogCategory,
 } from "../lib/supabase";
 import "@/styles/blog-details.css";
 
@@ -22,6 +25,8 @@ export default function BlogDetails() {
   const { slug } = useParams<{ slug: string }>();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [comments, setComments] = useState<BlogComment[]>([]);
+  const [recentPosts, setRecentPosts] = useState<BlogPost[]>([]);
+  const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [commentText, setCommentText] = useState("");
   const [commentName, setCommentName] = useState("");
@@ -33,10 +38,18 @@ export default function BlogDetails() {
     if (!slug) return;
     let mounted = true;
     setLoading(true);
+    setPost(null);
+    setComments([]);
     (async () => {
-      const postData = await loadBlogPost(slug);
+      const [postData, recentData, catData] = await Promise.all([
+        loadBlogPost(slug),
+        loadBlogPosts(5),
+        loadBlogCategories(),
+      ]);
       if (!mounted) return;
       setPost(postData);
+      setRecentPosts(recentData.filter((p) => p.slug !== slug));
+      setCategories(catData);
       if (postData) {
         const commentData = await loadBlogComments(postData.id);
         if (mounted) setComments(commentData);
@@ -105,7 +118,7 @@ export default function BlogDetails() {
               <Link to="/blog">Blog</Link>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
-              blog details
+              {post.title}
             </li>
           </ol>
         </div>
@@ -114,7 +127,8 @@ export default function BlogDetails() {
       <section className="inner-section blog-details-part">
         <div className="container">
           <div className="row">
-            <div className="col-lg-12">
+            {/* ── Main Content ── */}
+            <div className="col-lg-8">
               <article className="blog-details">
                 {post.featured_image_url && (
                   <div className="blog-details-thumb">
@@ -144,9 +158,13 @@ export default function BlogDetails() {
 
                   <h2 className="blog-details-title">{post.title}</h2>
 
+                  {post.excerpt && (
+                    <p className="blog-details-excerpt">{post.excerpt}</p>
+                  )}
+
                   {post.content && (
                     <div
-                      className="blog-details-desc"
+                      className="blog-details-body"
                       dangerouslySetInnerHTML={{ __html: post.content }}
                     />
                   )}
@@ -154,17 +172,26 @@ export default function BlogDetails() {
                   <div className="blog-details-footer">
                     <div className="blog-details-share">
                       <h5>share :</h5>
-                      <a href="#">
+                      <a
+                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <i className="fab fa-facebook-f" />
                       </a>
-                      <a href="#">
+                      <a
+                        href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(post.title)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <i className="fab fa-twitter" />
                       </a>
-                      <a href="#">
-                        <i className="fab fa-linkedin-in" />
-                      </a>
-                      <a href="#">
-                        <i className="fab fa-instagram" />
+                      <a
+                        href={`https://wa.me/?text=${encodeURIComponent(post.title + " " + window.location.href)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <i className="fab fa-whatsapp" />
                       </a>
                     </div>
                     {tags.length > 0 && (
@@ -181,49 +208,107 @@ export default function BlogDetails() {
                 </div>
               </article>
 
-              {/* Author Profile */}
+              {/* Author Card */}
               {author && (
                 <div className="blog-details-profile">
-                  <div className="row">
-                    <div className="col-md-2">
-                      <img
-                        src={author.avatar_url || "/images/avatar/01.jpg"}
-                        alt={author.name}
-                      />
-                    </div>
-                    <div className="col-md-10">
-                      <h4>{author.name}</h4>
-                      {author.email && <p>{author.email}</p>}
-                      <ul>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "24px",
+                      alignItems: "flex-start",
+                      textAlign: "left",
+                    }}
+                  >
+                    <img
+                      src={author.avatar_url || "/images/avatar/01.jpg"}
+                      alt={author.name}
+                      style={{
+                        width: "90px",
+                        height: "90px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        flexShrink: 0,
+                        border: "4px solid var(--chalk)",
+                      }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <h3
+                        style={{
+                          marginBottom: "4px",
+                          fontSize: "18px",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {author.name}
+                      </h3>
+                      {author.email && (
+                        <p
+                          style={{
+                            color: "var(--primary)",
+                            fontSize: "14px",
+                            marginBottom: "12px",
+                          }}
+                        >
+                          {author.email}
+                        </p>
+                      )}
+                      <ul style={{ marginBottom: "14px" }}>
                         {author.social_links?.facebook && (
                           <li>
-                            <a href={author.social_links.facebook}>
+                            <a
+                              href={author.social_links.facebook}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               <i className="fab fa-facebook-f" />
                             </a>
                           </li>
                         )}
                         {author.social_links?.twitter && (
                           <li>
-                            <a href={author.social_links.twitter}>
+                            <a
+                              href={author.social_links.twitter}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               <i className="fab fa-twitter" />
                             </a>
                           </li>
                         )}
                         {author.social_links?.instagram && (
                           <li>
-                            <a href={author.social_links.instagram}>
+                            <a
+                              href={author.social_links.instagram}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               <i className="fab fa-instagram" />
                             </a>
                           </li>
                         )}
+                        {author.social_links?.youtube && (
+                          <li>
+                            <a
+                              href={author.social_links.youtube}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <i className="fab fa-youtube" />
+                            </a>
+                          </li>
+                        )}
                       </ul>
-                      {author.bio && <p>{author.bio}</p>}
+                      {author.bio && (
+                        <p style={{ fontSize: "15px", lineHeight: "1.7" }}>
+                          {author.bio}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Post Navigation */}
+              {/* Back link */}
               <div className="blog-details-navigate">
                 <div className="row">
                   <div className="col-md-6">
@@ -245,7 +330,23 @@ export default function BlogDetails() {
                   {comments.map((c) => (
                     <li key={c.id} className="comment-item">
                       <div className="comment-media">
-                        <img src="/images/avatar/02.jpg" alt="avatar" />
+                        <div
+                          style={{
+                            width: "48px",
+                            height: "48px",
+                            borderRadius: "50%",
+                            background: "var(--primary)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "#fff",
+                            fontWeight: 700,
+                            fontSize: "18px",
+                            flexShrink: 0,
+                          }}
+                        >
+                          {(c.author_name ?? "A").charAt(0).toUpperCase()}
+                        </div>
                         <div>
                           <h6>{c.author_name ?? "Anonymous"}</h6>
                           <span>{formatDate(c.created_at)}</span>
@@ -255,7 +356,15 @@ export default function BlogDetails() {
                     </li>
                   ))}
                   {comments.length === 0 && (
-                    <p>No comments yet. Be the first to share your thoughts!</p>
+                    <p
+                      style={{
+                        color: "#888",
+                        fontStyle: "italic",
+                        padding: "20px 0",
+                      }}
+                    >
+                      No comments yet. Be the first to share your thoughts!
+                    </p>
                   )}
                 </ul>
               </div>
@@ -269,8 +378,16 @@ export default function BlogDetails() {
                 {submitMsg && (
                   <p
                     style={{
-                      color: submitMsg.includes("Failed") ? "red" : "green",
-                      marginBottom: "12px",
+                      color: submitMsg.includes("Failed")
+                        ? "#e53e3e"
+                        : "#38a169",
+                      background: submitMsg.includes("Failed")
+                        ? "#fff5f5"
+                        : "#f0fff4",
+                      padding: "10px 14px",
+                      borderRadius: "6px",
+                      marginBottom: "16px",
+                      fontSize: "14px",
                     }}
                   >
                     {submitMsg}
@@ -281,7 +398,7 @@ export default function BlogDetails() {
                     <div className="form-group">
                       <textarea
                         className="form-control"
-                        placeholder="Write your comment..."
+                        placeholder="Write your comment…"
                         value={commentText}
                         onChange={(e) => setCommentText(e.target.value)}
                         required
@@ -293,7 +410,7 @@ export default function BlogDetails() {
                       <input
                         className="form-control"
                         type="text"
-                        placeholder="Your name"
+                        placeholder="Your name *"
                         value={commentName}
                         onChange={(e) => setCommentName(e.target.value)}
                         required
@@ -305,7 +422,7 @@ export default function BlogDetails() {
                       <input
                         className="form-control"
                         type="email"
-                        placeholder="Your email"
+                        placeholder="Your email (optional)"
                         value={commentEmail}
                         onChange={(e) => setCommentEmail(e.target.value)}
                       />
@@ -322,6 +439,103 @@ export default function BlogDetails() {
                   </div>
                 </div>
               </form>
+            </div>
+
+            {/* ── Sidebar ── */}
+            <div className="col-md-7 col-lg-4">
+              {/* Recent Posts */}
+              {recentPosts.length > 0 && (
+                <div className="blog-widget">
+                  <h4 className="blog-widget-title">Recent Posts</h4>
+                  <ul className="blog-widget-feed">
+                    {recentPosts.map((rp) => (
+                      <li key={rp.id}>
+                        <Link to={`/blog/${rp.slug}`}>
+                          <img
+                            src={rp.featured_image_url || "/images/blog/01.jpg"}
+                            alt={rp.title}
+                          />
+                          <div>
+                            <h6>{rp.title}</h6>
+                            <span>{formatDate(rp.published_at)}</span>
+                          </div>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Categories */}
+              {categories.length > 0 && (
+                <div className="blog-widget">
+                  <h4 className="blog-widget-title">Categories</h4>
+                  <ul className="blog-widget-category">
+                    {categories.map((cat) => (
+                      <li key={cat.id}>
+                        <Link to="/blog">{cat.name}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Tags */}
+              {tags.length > 0 && (
+                <div className="blog-widget">
+                  <h4 className="blog-widget-title">Tags</h4>
+                  <ul className="blog-widget-tag">
+                    {tags.map((tag) => (
+                      <li key={tag}>
+                        <a href="#">{tag}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Share */}
+              <div className="blog-widget">
+                <h4 className="blog-widget-title">Share Article</h4>
+                <ul className="blog-widget-social">
+                  <li>
+                    <a
+                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="icofont-facebook"
+                      title="Facebook"
+                    />
+                  </li>
+                  <li>
+                    <a
+                      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(post.title)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="icofont-twitter"
+                      title="Twitter"
+                    />
+                  </li>
+                  <li>
+                    <a
+                      href={`https://wa.me/?text=${encodeURIComponent(post.title + " " + window.location.href)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="icofont-whatsapp"
+                      title="WhatsApp"
+                    />
+                  </li>
+                  <li>
+                    <a
+                      href={author?.social_links?.instagram || "#"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="icofont-instagram"
+                      title="Instagram"
+                    />
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
