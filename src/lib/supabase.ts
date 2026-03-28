@@ -747,6 +747,7 @@ export interface BlogPost {
   blog_authors?: {
     id: string;
     name: string;
+    bio: string | null;
     avatar_url: string | null;
     slug: string;
     email: string | null;
