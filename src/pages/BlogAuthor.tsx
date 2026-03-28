@@ -1,15 +1,61 @@
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import {
+  loadBlogAuthor,
+  loadBlogPostsByAuthor,
+  loadBlogPosts,
+  loadBlogCategories,
+  type BlogAuthor,
+  type BlogPost,
+  type BlogCategory,
+} from "../lib/supabase";
 import "@/styles/blog-author.css";
 
-const authorPosts = Array.from({ length: 5 }, (_, i) => ({
-  id: i + 1,
-  image: `/images/blog/0${(i % 4) + 1}.jpg`,
-  date: `${15 + i} Jun, 2024`,
-  title: "Lorem ipsum dolor sit amet consectetur tempor incididunt",
-  desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet reiciendis beatae consequis...",
-}));
+function formatDate(iso: string | null) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
 
 export default function BlogAuthor() {
+  const { id } = useParams<{ id: string }>();
+  const [author, setAuthor] = useState<BlogAuthor | null>(null);
+  const [authorPosts, setAuthorPosts] = useState<BlogPost[]>([]);
+  const [recentPosts, setRecentPosts] = useState<BlogPost[]>([]);
+  const [categories, setCategories] = useState<BlogCategory[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!id) return;
+    let mounted = true;
+    (async () => {
+      const [authorData, postData, recentData, catData] = await Promise.all([
+        loadBlogAuthor(id),
+        loadBlogPostsByAuthor(id),
+        loadBlogPosts(5),
+        loadBlogCategories(),
+      ]);
+      if (!mounted) return;
+      setAuthor(authorData);
+      setAuthorPosts(postData);
+      setRecentPosts(recentData);
+      setCategories(catData);
+      setLoading(false);
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [id]);
+
+  const popularTags = useMemo(
+    () =>
+      [...new Set(recentPosts.flatMap((p) => p.tags as string[]))].slice(0, 10),
+    [recentPosts],
+  );
+
   return (
     <>
       <section
@@ -26,7 +72,7 @@ export default function BlogAuthor() {
               <Link to="/">Home</Link>
             </li>
             <li className="breadcrumb-item">
-              <Link to="/blog-grid">Blog</Link>
+              <Link to="/blog">Blog</Link>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
               blog author
@@ -39,152 +85,146 @@ export default function BlogAuthor() {
         <div className="container">
           <div className="row">
             <div className="col-lg-8">
-              {/* Author Profile */}
-              <div className="author-single">
-                <div className="author-content">
-                  <div className="author-image">
-                    <img src="/images/avatar/01.jpg" alt="author" />
-                  </div>
-                  <div className="author-info">
-                    <h3 className="author-name">Admin</h3>
-                    <h6 className="author-mail">admin@oscarmkatoliki.com</h6>
-                    <ul className="author-social">
+              {loading && <p style={{ padding: "40px 0" }}>Loading author…</p>}
+              {!loading && !author && (
+                <p style={{ padding: "40px 0" }}>Author not found.</p>
+              )}
+              {!loading && author && (
+                <>
+                  {/* Author Profile */}
+                  <div className="author-single">
+                    <div className="author-content">
+                      <div className="author-image">
+                        <img
+                          src={author.avatar_url || "/images/avatar/01.jpg"}
+                          alt={author.name}
+                        />
+                      </div>
+                      <div className="author-info">
+                        <h3 className="author-name">{author.name}</h3>
+                        {author.email && (
+                          <h6 className="author-mail">{author.email}</h6>
+                        )}
+                        <ul className="author-social">
+                          {author.social_links?.facebook && (
+                            <li>
+                              <a href={author.social_links.facebook}>
+                                <i className="fab fa-facebook-f" />
+                              </a>
+                            </li>
+                          )}
+                          {author.social_links?.twitter && (
+                            <li>
+                              <a href={author.social_links.twitter}>
+                                <i className="fab fa-twitter" />
+                              </a>
+                            </li>
+                          )}
+                          {author.social_links?.instagram && (
+                            <li>
+                              <a href={author.social_links.instagram}>
+                                <i className="fab fa-instagram" />
+                              </a>
+                            </li>
+                          )}
+                          {author.social_links?.youtube && (
+                            <li>
+                              <a href={author.social_links.youtube}>
+                                <i className="fab fa-youtube" />
+                              </a>
+                            </li>
+                          )}
+                        </ul>
+                      </div>
+                    </div>
+                    {author.bio && <p className="author-bio">{author.bio}</p>}
+                    <ul className="author-meta">
                       <li>
-                        <a href="#">
-                          <i className="fab fa-facebook-f" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <i className="fab fa-twitter" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <i className="fab fa-linkedin-in" />
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <i className="fab fa-instagram" />
-                        </a>
+                        <i className="fas fa-newspaper" />
+                        <span>
+                          Total Blog <b>{authorPosts.length}</b>
+                        </span>
                       </li>
                     </ul>
                   </div>
-                </div>
-                <p className="author-bio">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet
-                  reiciendis beatae consequis mollitia provident nisi eum
-                  voluptate labore rerum fugiat tempor.
-                </p>
-                <ul className="author-meta">
-                  <li>
-                    <i className="fas fa-newspaper" />
-                    <span>
-                      Total Blog <b>25</b>
-                    </span>
-                  </li>
-                  <li>
-                    <i className="fas fa-comments" />
-                    <span>
-                      Total Comment <b>130</b>
-                    </span>
-                  </li>
-                  <li>
-                    <i className="fas fa-share-alt" />
-                    <span>
-                      Total Share <b>45</b>
-                    </span>
-                  </li>
-                </ul>
-              </div>
 
-              <div className="top-filter">
-                <div className="filter-show">
-                  <label className="filter-label">Show :</label>
-                  <select className="form-select filter-select">
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                  </select>
-                </div>
-                <div className="filter-short">
-                  <label className="filter-label">Sort by :</label>
-                  <select className="form-select filter-select">
-                    <option value="default">default</option>
-                    <option value="recent">recent</option>
-                    <option value="featured">featured</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="row">
-                {authorPosts.map((post) => (
-                  <div key={post.id} className="col-md-6 col-lg-6">
-                    <div className="blog-card">
-                      <div className="blog-media">
-                        <div className="blog-img">
-                          <Link to="/blog-details">
-                            <img src={post.image} alt="blog" />
-                          </Link>
-                        </div>
-                      </div>
-                      <div className="blog-content">
-                        <ul className="blog-meta">
-                          <li>
-                            <i className="fas fa-user" />
-                            <span>Admin</span>
-                          </li>
-                          <li>
-                            <i className="fas fa-calendar-alt" />
-                            <span>{post.date}</span>
-                          </li>
-                        </ul>
-                        <h4 className="blog-title">
-                          <Link to="/blog-details">{post.title}</Link>
-                        </h4>
-                        <p className="blog-desc">{post.desc}</p>
-                        <Link to="/blog-details" className="blog-btn">
-                          <span>read more</span>
-                          <i className="icofont-arrow-right" />
-                        </Link>
-                      </div>
+                  <div className="top-filter">
+                    <div className="filter-short">
+                      <label className="filter-label">Sort by :</label>
+                      <select className="form-select filter-select">
+                        <option value="default">default</option>
+                        <option value="recent">recent</option>
+                      </select>
                     </div>
                   </div>
-                ))}
-              </div>
 
-              <div className="bottom-paginate">
-                <p className="page-info">Show 1 to 5 of 25 results</p>
-                <ul className="pagination">
-                  <li className="page-item">
-                    <a className="page-link" href="#">
-                      <i className="fas fa-long-arrow-alt-left" />
-                    </a>
-                  </li>
-                  <li className="page-item active">
-                    <a className="page-link" href="#">
-                      1
-                    </a>
-                  </li>
-                  <li className="page-item">
-                    <a className="page-link" href="#">
-                      2
-                    </a>
-                  </li>
-                  <li className="page-item">
-                    <a className="page-link" href="#">
-                      <i className="fas fa-long-arrow-alt-right" />
-                    </a>
-                  </li>
-                </ul>
-              </div>
+                  <div className="row">
+                    {authorPosts.map((post) => (
+                      <div key={post.id} className="col-md-6 col-lg-6">
+                        <div className="blog-card">
+                          <div className="blog-media">
+                            <div className="blog-img">
+                              <Link to={`/blog/${post.slug}`}>
+                                <img
+                                  src={
+                                    post.featured_image_url ||
+                                    "/images/blog/01.jpg"
+                                  }
+                                  alt={post.title}
+                                />
+                              </Link>
+                            </div>
+                          </div>
+                          <div className="blog-content">
+                            <ul className="blog-meta">
+                              <li>
+                                <i className="fas fa-user" />
+                                <span>{author.name}</span>
+                              </li>
+                              <li>
+                                <i className="fas fa-calendar-alt" />
+                                <span>{formatDate(post.published_at)}</span>
+                              </li>
+                            </ul>
+                            <h4 className="blog-title">
+                              <Link to={`/blog/${post.slug}`}>
+                                {post.title}
+                              </Link>
+                            </h4>
+                            <p className="blog-desc">{post.excerpt}</p>
+                            <Link
+                              to={`/blog/${post.slug}`}
+                              className="blog-btn"
+                            >
+                              <span>read more</span>
+                              <i className="icofont-arrow-right" />
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {authorPosts.length === 0 && (
+                      <p>No posts by this author yet.</p>
+                    )}
+                  </div>
+
+                  <div className="bottom-paginate">
+                    <p className="page-info">
+                      Showing {authorPosts.length} posts
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Sidebar */}
             <div className="col-md-7 col-lg-4">
               <div className="blog-widget">
                 <h4 className="blog-widget-title">Find blogs</h4>
-                <form className="blog-widget-form">
+                <form
+                  className="blog-widget-form"
+                  onSubmit={(e) => e.preventDefault()}
+                >
                   <input type="text" placeholder="Search blogs..." />
                   <button type="submit">
                     <i className="fas fa-search" />
@@ -195,13 +235,16 @@ export default function BlogAuthor() {
               <div className="blog-widget">
                 <h4 className="blog-widget-title">popular feeds</h4>
                 <ul className="blog-widget-feed">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <li key={i}>
-                      <Link to="/blog-details">
-                        <img src={`/images/blog-widget/0${i}.jpg`} alt="blog" />
+                  {recentPosts.map((post) => (
+                    <li key={post.id}>
+                      <Link to={`/blog/${post.slug}`}>
+                        <img
+                          src={post.featured_image_url || "/images/blog/01.jpg"}
+                          alt={post.title}
+                        />
                         <div>
-                          <h6>Lorem ipsum dolor sit amet consectetur</h6>
-                          <span>{10 + i} Jun, 2024</span>
+                          <h6>{post.title}</h6>
+                          <span>{formatDate(post.published_at)}</span>
                         </div>
                       </Link>
                     </li>
@@ -212,17 +255,9 @@ export default function BlogAuthor() {
               <div className="blog-widget">
                 <h4 className="blog-widget-title">top categories</h4>
                 <ul className="blog-widget-category">
-                  {[
-                    "Vegetables",
-                    "Grocery",
-                    "Fruits",
-                    "Snacks",
-                    "Beverages",
-                  ].map((cat, i) => (
-                    <li key={cat}>
-                      <a href="#">
-                        {cat} <span>({(i + 1) * 5})</span>
-                      </a>
+                  {categories.map((cat) => (
+                    <li key={cat.id}>
+                      <a href="#">{cat.name}</a>
                     </li>
                   ))}
                 </ul>
@@ -231,15 +266,7 @@ export default function BlogAuthor() {
               <div className="blog-widget">
                 <h4 className="blog-widget-title">popular tags</h4>
                 <ul className="blog-widget-tag">
-                  {[
-                    "organic",
-                    "vegetables",
-                    "grocery",
-                    "fruits",
-                    "snacks",
-                    "health",
-                    "natural",
-                  ].map((tag) => (
+                  {popularTags.map((tag) => (
                     <li key={tag}>
                       <a href="#">{tag}</a>
                     </li>

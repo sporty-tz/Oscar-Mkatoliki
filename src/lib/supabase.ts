@@ -713,3 +713,155 @@ export function subscribeToWallet(
     )
     .subscribe();
 }
+
+/* ─── blog ─── */
+export interface BlogAuthor {
+  id: string;
+  name: string;
+  slug: string;
+  bio: string | null;
+  avatar_url: string | null;
+  email: string | null;
+  social_links: Record<string, string>;
+}
+
+export interface BlogCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+}
+
+export interface BlogPost {
+  id: string;
+  author_id: string | null;
+  category_id: string | null;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string | null;
+  featured_image_url: string | null;
+  tags: string[];
+  view_count: number;
+  published_at: string | null;
+  blog_authors?: {
+    id: string;
+    name: string;
+    avatar_url: string | null;
+    slug: string;
+    email: string | null;
+    social_links: Record<string, string>;
+  } | null;
+  blog_categories?: { name: string; slug: string } | null;
+}
+
+export interface BlogComment {
+  id: string;
+  post_id: string;
+  author_name: string | null;
+  comment: string;
+  created_at: string;
+}
+
+export async function loadBlogPosts(limit = 20): Promise<BlogPost[]> {
+  const { data, error } = await supabase
+    .from("blog_posts")
+    .select(
+      "id,author_id,category_id,title,slug,excerpt,featured_image_url,tags,view_count,published_at,blog_authors(id,name,avatar_url,slug,email,social_links),blog_categories(name,slug)",
+    )
+    .eq("is_published", true)
+    .order("published_at", { ascending: false })
+    .limit(limit);
+  if (error) {
+    console.error("loadBlogPosts", error);
+    return [];
+  }
+  return data as unknown as BlogPost[];
+}
+
+export async function loadBlogPost(slug: string): Promise<BlogPost | null> {
+  const { data, error } = await supabase
+    .from("blog_posts")
+    .select(
+      "*,blog_authors(id,name,avatar_url,slug,email,social_links),blog_categories(name,slug)",
+    )
+    .eq("slug", slug)
+    .eq("is_published", true)
+    .single();
+  if (error) {
+    console.error("loadBlogPost", error);
+    return null;
+  }
+  return data as unknown as BlogPost;
+}
+
+export async function loadBlogCategories(): Promise<BlogCategory[]> {
+  const { data, error } = await supabase
+    .from("blog_categories")
+    .select("id,name,slug,description")
+    .eq("is_active", true)
+    .order("name");
+  if (error) {
+    console.error("loadBlogCategories", error);
+    return [];
+  }
+  return data as BlogCategory[];
+}
+
+export async function loadBlogAuthor(id: string): Promise<BlogAuthor | null> {
+  const { data, error } = await supabase
+    .from("blog_authors")
+    .select("id,name,slug,bio,avatar_url,email,social_links")
+    .eq("id", id)
+    .eq("is_active", true)
+    .single();
+  if (error) {
+    console.error("loadBlogAuthor", error);
+    return null;
+  }
+  return data as BlogAuthor;
+}
+
+export async function loadBlogPostsByAuthor(
+  authorId: string,
+  limit = 10,
+): Promise<BlogPost[]> {
+  const { data, error } = await supabase
+    .from("blog_posts")
+    .select(
+      "id,author_id,category_id,title,slug,excerpt,featured_image_url,tags,view_count,published_at,blog_categories(name,slug)",
+    )
+    .eq("author_id", authorId)
+    .eq("is_published", true)
+    .order("published_at", { ascending: false })
+    .limit(limit);
+  if (error) {
+    console.error("loadBlogPostsByAuthor", error);
+    return [];
+  }
+  return data as unknown as BlogPost[];
+}
+
+export async function loadBlogComments(postId: string): Promise<BlogComment[]> {
+  const { data, error } = await supabase
+    .from("blog_comments")
+    .select("id,post_id,author_name,comment,created_at")
+    .eq("post_id", postId)
+    .eq("is_approved", true)
+    .order("created_at", { ascending: true });
+  if (error) {
+    console.error("loadBlogComments", error);
+    return [];
+  }
+  return data as BlogComment[];
+}
+
+export async function submitBlogComment(payload: {
+  post_id: string;
+  author_name: string;
+  author_email: string;
+  comment: string;
+}) {
+  const { error } = await supabase.from("blog_comments").insert([payload]);
+  if (error) throw error;
+}

@@ -1,17 +1,49 @@
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  loadBlogPosts,
+  loadBlogCategories,
+  type BlogPost,
+  type BlogCategory,
+} from "../lib/supabase";
 import "@/styles/blog-standard.css";
 
-const blogPosts = Array.from({ length: 5 }, (_, i) => ({
-  id: i + 1,
-  image: `/images/blog/0${(i % 4) + 1}.jpg`,
-  author: "Admin",
-  date: `${15 + i} Jun, 2024`,
-  comments: 6 + i,
-  title: "Lorem ipsum dolor sit amet consectetur tempor incididunt labore",
-  desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet reiciendis beatae consequis mollitia provident nisi eum aliquid at neque sit debitis.",
-}));
+function formatDate(iso: string | null) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
 
 export default function BlogStandard() {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [categories, setCategories] = useState<BlogCategory[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const [postRows, catRows] = await Promise.all([
+        loadBlogPosts(20),
+        loadBlogCategories(),
+      ]);
+      if (!mounted) return;
+      setPosts(postRows);
+      setCategories(catRows);
+      setLoading(false);
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const recentPosts = useMemo(() => posts.slice(0, 5), [posts]);
+  const popularTags = useMemo(
+    () => [...new Set(posts.flatMap((p) => p.tags as string[]))].slice(0, 10),
+    [posts],
+  );
   return (
     <>
       <section
@@ -57,11 +89,11 @@ export default function BlogStandard() {
                   </select>
                 </div>
                 <div className="filter-action">
-                  <Link to="/blog-grid" title="Grid View">
+                  <Link to="/blog" title="Grid View">
                     <i className="fas fa-th" />
                   </Link>
                   <Link
-                    to="/blog-standard"
+                    to="/blog/standard"
                     className="active"
                     title="List View"
                   >
@@ -70,14 +102,21 @@ export default function BlogStandard() {
                 </div>
               </div>
 
+              {loading && <p>Loading posts…</p>}
+
               <div className="row">
-                {blogPosts.map((post) => (
+                {posts.map((post) => (
                   <div key={post.id} className="col-lg-12">
                     <div className="blog-card">
                       <div className="blog-media">
                         <div className="blog-img">
-                          <Link to="/blog-details">
-                            <img src={post.image} alt="blog" />
+                          <Link to={`/blog/${post.slug}`}>
+                            <img
+                              src={
+                                post.featured_image_url || "/images/blog/01.jpg"
+                              }
+                              alt={post.title}
+                            />
                           </Link>
                         </div>
                       </div>
@@ -85,22 +124,22 @@ export default function BlogStandard() {
                         <ul className="blog-meta">
                           <li>
                             <i className="fas fa-calendar-alt" />
-                            <span>{post.date}</span>
+                            <span>{formatDate(post.published_at)}</span>
                           </li>
                           <li>
                             <i className="fas fa-user" />
-                            <span>{post.author}</span>
+                            <span>{post.blog_authors?.name ?? "Admin"}</span>
                           </li>
                           <li>
-                            <i className="fas fa-comments" />
-                            <span>{post.comments} comments</span>
+                            <i className="fas fa-eye" />
+                            <span>{post.view_count} views</span>
                           </li>
                         </ul>
                         <h4 className="blog-title">
-                          <Link to="/blog-details">{post.title}</Link>
+                          <Link to={`/blog/${post.slug}`}>{post.title}</Link>
                         </h4>
-                        <p className="blog-desc">{post.desc}</p>
-                        <Link to="/blog-details" className="blog-btn">
+                        <p className="blog-desc">{post.excerpt}</p>
+                        <Link to={`/blog/${post.slug}`} className="blog-btn">
                           <span>read more</span>
                           <i className="icofont-arrow-right" />
                         </Link>
@@ -108,16 +147,14 @@ export default function BlogStandard() {
                     </div>
                   </div>
                 ))}
+                {!loading && posts.length === 0 && (
+                  <p>No posts available yet.</p>
+                )}
               </div>
 
               <div className="bottom-paginate">
-                <p className="page-info">Show 1 to 5 of 15 results</p>
+                <p className="page-info">Showing {posts.length} posts</p>
                 <ul className="pagination">
-                  <li className="page-item">
-                    <a className="page-link" href="#">
-                      <i className="fas fa-long-arrow-alt-left" />
-                    </a>
-                  </li>
                   <li className="page-item active">
                     <a className="page-link" href="#">
                       1
@@ -146,7 +183,10 @@ export default function BlogStandard() {
             <div className="col-sm-10 col-md-7 col-lg-4">
               <div className="blog-widget">
                 <h4 className="blog-widget-title">Find blogs</h4>
-                <form className="blog-widget-form">
+                <form
+                  className="blog-widget-form"
+                  onSubmit={(e) => e.preventDefault()}
+                >
                   <input type="text" placeholder="Search blogs..." />
                   <button type="submit">
                     <i className="fas fa-search" />
@@ -157,13 +197,16 @@ export default function BlogStandard() {
               <div className="blog-widget">
                 <h4 className="blog-widget-title">popular feeds</h4>
                 <ul className="blog-widget-feed">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <li key={i}>
-                      <Link to="/blog-details">
-                        <img src={`/images/blog-widget/0${i}.jpg`} alt="blog" />
+                  {recentPosts.map((post) => (
+                    <li key={post.id}>
+                      <Link to={`/blog/${post.slug}`}>
+                        <img
+                          src={post.featured_image_url || "/images/blog/01.jpg"}
+                          alt={post.title}
+                        />
                         <div>
-                          <h6>Lorem ipsum dolor sit amet consectetur</h6>
-                          <span>{10 + i} Jun, 2024</span>
+                          <h6>{post.title}</h6>
+                          <span>{formatDate(post.published_at)}</span>
                         </div>
                       </Link>
                     </li>
@@ -174,17 +217,9 @@ export default function BlogStandard() {
               <div className="blog-widget">
                 <h4 className="blog-widget-title">top categories</h4>
                 <ul className="blog-widget-category">
-                  {[
-                    "Vegetables",
-                    "Grocery",
-                    "Fruits",
-                    "Snacks",
-                    "Beverages",
-                  ].map((cat, i) => (
-                    <li key={cat}>
-                      <a href="#">
-                        {cat} <span>({(i + 1) * 5})</span>
-                      </a>
+                  {categories.map((cat) => (
+                    <li key={cat.id}>
+                      <a href="#">{cat.name}</a>
                     </li>
                   ))}
                 </ul>
@@ -193,15 +228,7 @@ export default function BlogStandard() {
               <div className="blog-widget">
                 <h4 className="blog-widget-title">popular tags</h4>
                 <ul className="blog-widget-tag">
-                  {[
-                    "organic",
-                    "vegetables",
-                    "grocery",
-                    "fruits",
-                    "snacks",
-                    "health",
-                    "natural",
-                  ].map((tag) => (
+                  {popularTags.map((tag) => (
                     <li key={tag}>
                       <a href="#">{tag}</a>
                     </li>
