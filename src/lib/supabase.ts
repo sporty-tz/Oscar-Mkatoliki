@@ -783,7 +783,7 @@ export async function loadBlogPost(slug: string): Promise<BlogPost | null> {
   const { data, error } = await supabase
     .from("blog_posts")
     .select(
-      "*,blog_authors(id,name,avatar_url,slug,email,social_links),blog_categories(name,slug)",
+      "*,blog_authors(id,name,bio,avatar_url,slug,email,social_links),blog_categories(name,slug)",
     )
     .eq("slug", slug)
     .eq("is_published", true)
