@@ -415,6 +415,7 @@ function Header({
       }}
     >
       <div
+        className="main-header-inner"
         style={{
           maxWidth: 1280,
           margin: "0 auto",
@@ -684,7 +685,7 @@ function Header({
             Donate
           </a>
         </nav>
-        <div style={{ flex: 1 }} />
+        <div className="header-spacer" style={{ flex: 1 }} />
         <div
           ref={searchRef}
           className="header-search"
@@ -1168,7 +1169,21 @@ function Header({
             onMouseEnter={(e) => (e.currentTarget.style.background = "#C9A84C")}
             onMouseLeave={(e) => (e.currentTarget.style.background = "#D4AF37")}
           >
-            Sign in
+            <span className="header-signin-text">Sign in</span>
+            <svg
+              className="header-signin-icon"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
           </a>
         )}
         <button
@@ -1722,6 +1737,7 @@ const GLOBAL_CSS = `
   .ticker-track { display: flex; width: max-content; animation: ticker-move 28s linear infinite; }
   .ticker-content { font-size: 11.5px; color: #D4AF37; font-weight: 600; letter-spacing: 0.9px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
   @keyframes ticker-move { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  .header-signin-icon { display: none; }
 
   @media (max-width: 1024px) {
     .cat-grid   { grid-template-columns: repeat(4, 1fr) !important; }
@@ -1733,17 +1749,25 @@ const GLOBAL_CSS = `
   @media (max-width: 640px) {
     .ann-util { display: none !important; }
     .ann-bar  { justify-content: center !important; padding: 0 12px !important; }
-    .main-header-inner { height: 56px !important; padding: 0 12px !important; gap: 10px !important; }
+    .main-header-inner { height: 64px !important; padding: 0 14px !important; gap: 8px !important; }
     .header-main-nav { display: none !important; }
-    .header-search { width: auto !important; flex: 1 !important; }
-    .header-search input { font-size: 13px !important; padding: 8px 12px 8px 34px !important; }
-    .header-logo img { height: 52px !important; }
-    .header-signin { display: none !important; }
-    .cat-nav-sticky { top: 56px !important; }
+    .header-spacer { display: none !important; }
+    .header-search { width: auto !important; flex: 1 !important; min-width: 0 !important; }
+    .header-search input { font-size: 13px !important; padding: 9px 12px 9px 36px !important; }
+    .header-logo { margin-right: 10px !important; }
+    .header-logo img { height: 58px !important; }
+    .header-signin { background: transparent !important; padding: 6px !important; margin-left: 6px !important; border-radius: 50% !important; color: #333 !important; display: flex !important; align-items: center !important; }
+    .header-signin-text { display: none !important; }
+    .header-signin-icon { display: block !important; }
+    .cat-nav-sticky { top: 64px !important; }
     .cat-nav-inner button { padding: 11px 12px !important; font-size: 12px !important; }
-    .hero-inner { flex-direction: column !important; min-height: unset !important; padding: 28px 16px 48px !important; gap: 24px !important; align-items: flex-start !important; }
-    .hero-image-panel { width: 100% !important; height: 220px !important; }
-    .hero-h1 { font-size: 36px !important; }
+    /* ── Hero: full-bleed image background on mobile ── */
+    .hero-section::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.05) 100%); z-index: 1; pointer-events: none; }
+    .hero-inner { flex-direction: column !important; min-height: 480px !important; padding: 0 20px 64px !important; gap: 0 !important; align-items: flex-start !important; justify-content: flex-end !important; }
+    .hero-image-panel { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; z-index: 0 !important; }
+    .hero-image-panel img { border-radius: 0 !important; box-shadow: none !important; width: 100% !important; height: 100% !important; object-fit: cover !important; object-position: 65% top !important; }
+    .hero-text-block { position: relative !important; z-index: 2 !important; padding: 0 !important; }
+    .hero-h1 { font-size: 38px !important; }
     .section-pad { padding: 36px 0 !important; }
     .section-inner { padding: 0 12px !important; }
     .cat-grid  { grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; }

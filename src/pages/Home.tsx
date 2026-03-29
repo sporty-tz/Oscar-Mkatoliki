@@ -178,6 +178,7 @@ function HeroBanner() {
 
   return (
     <section
+      className="hero-section"
       style={{
         position: "relative",
         overflow: "hidden",
@@ -198,7 +199,10 @@ function HeroBanner() {
         }}
       >
         {/* Text block */}
-        <div style={{ flex: 1, zIndex: 2, padding: "72px 0" }}>
+        <div
+          className="hero-text-block"
+          style={{ flex: 1, zIndex: 2, padding: "72px 0" }}
+        >
           <span
             style={{
               display: "inline-block",
