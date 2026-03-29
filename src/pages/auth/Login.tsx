@@ -61,7 +61,7 @@ export default function Login() {
       {/* Brand */}
       <div style={{ marginBottom: "28px", textAlign: "center" }}>
         <img
-          src="/Images/Logo.png"
+          src="/images/logo.png"
           alt="Oscar Mkatoliki"
           style={{
             height: "130px",

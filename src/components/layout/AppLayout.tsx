@@ -437,7 +437,7 @@ function Header({
           }}
         >
           <img
-            src="/Images/Logo.png"
+            src="/images/logo.png"
             alt="Oscar Mkatoliki"
             style={{ height: 80, objectFit: "contain", display: "block" }}
           />
@@ -1387,7 +1387,7 @@ function Footer() {
         >
           <div className="footer-brand">
             <img
-              src="/Images/Logo.png"
+              src="/images/logo.png"
               alt="Oscar Mkatoliki"
               style={{
                 height: 56,
