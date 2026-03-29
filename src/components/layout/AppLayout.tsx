@@ -1729,6 +1729,7 @@ function CartSidebar({
 // ─── Global CSS ───────────────────────────────────────────────────────────────
 const GLOBAL_CSS = `
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow-x: hidden; max-width: 100%; }
   ::-webkit-scrollbar { height: 4px; width: 6px; }
   ::-webkit-scrollbar-track { background: #f1f1f1; }
   ::-webkit-scrollbar-thumb { background: #C9A84C; border-radius: 3px; }
@@ -1802,6 +1803,14 @@ const GLOBAL_CSS = `
     .pd-top { grid-template-columns: 1fr !important; gap: 24px !important; }
     .pd-product-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
   }
+
+  /* ── Landscape phone: constrain layout, stay single-column ── */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .main-header-inner { height: 52px !important; }
+    .hero-inner { min-height: 320px !important; }
+    .hero-h1 { font-size: 28px !important; }
+    .cat-nav-sticky { top: 52px !important; }
+  }
 `;
 
 // ─── App Layout ───────────────────────────────────────────────────────────────
@@ -1815,6 +1824,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif",
         background: "#faf7f2",
         minHeight: "100vh",
+        overflowX: "hidden",
+        maxWidth: "100%",
       }}
     >
       <style>{GLOBAL_CSS}</style>
