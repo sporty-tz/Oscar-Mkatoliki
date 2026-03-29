@@ -1,860 +1,1586 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import SlickSlider from "react-slick";
-import type { Settings } from "react-slick";
-import ProductCard from "../components/product/ProductCard";
-import {
-  assetPath,
-  getAssetPublicUrl,
-  loadBrands,
-  loadCategories,
-  loadProducts,
-  type Brand,
-  type Category,
-  type Product,
-} from "../lib/supabase";
-import "@/styles/home-grid.css";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { type Product, FEATURED_PRODUCTS } from "../lib/products";
+import AppLayout from "../components/layout/AppLayout";
+import { useCart } from "../context/CartContext";
 
-// react-slick is CJS – Vite may resolve default differently
-const Slider = (
-  "default" in SlickSlider
-    ? (SlickSlider as unknown as { default: typeof SlickSlider }).default
-    : SlickSlider
-) as React.ComponentType<Settings & { children?: React.ReactNode }>;
-
-const asset = (subPath: string) => getAssetPublicUrl(assetPath(subPath));
-
-function SliderArrow(props: {
-  className?: string;
-  onClick?: () => void;
-  direction: "prev" | "next";
-  currentSlide?: number;
-  slideCount?: number;
-}) {
-  const { onClick, direction } = props;
-  return (
-    <i
-      className={
-        direction === "next"
-          ? "icofont-arrow-right dandik"
-          : "icofont-arrow-left bamdik"
-      }
-      onClick={onClick}
-    />
-  );
-}
-
-const testimonials = [
-  { name: "mahmud hasan", img: asset("avatar/01.jpg") },
-  { name: "mahmud hasan", img: asset("avatar/02.jpg") },
-  { name: "mahmud hasan", img: asset("avatar/03.jpg") },
-  { name: "mahmud hasan", img: asset("avatar/04.jpg") },
+// ─── Data ─────────────────────────────────────────────────────────────────────
+const SLIDES = [
+  {
+    id: 1,
+    image: "/Slider/Pope-leo-xiv.png",
+    subheading: "Words of the Holy Father",
+    heading: "Walk in Hope",
+    quote:
+      "\u201cWe are pilgrims on a journey of faith. Let us walk together in hope, in charity, and in the joy of the Gospel, building a world of fraternity and peace.\u201d",
+    attribution: "\u2014 Pope Leo XIV",
+    cta: "Explore Faith Resources",
+    bg: "linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%)",
+    accent: "#D4AF37",
+  },
+  {
+    id: 2,
+    image: "/Slider/Hail-Mary.png",
+    subheading: "Ave Maria",
+    heading: "Full of Grace",
+    quote:
+      "\u201cHail Mary, full of grace, the Lord is with thee. Blessed art thou among women, and blessed is the fruit of thy womb, Jesus.\u201d",
+    attribution: "\u2014 Luke 1:28, The Angel Gabriel",
+    cta: "Shop Rosaries & Devotionals",
+    bg: "linear-gradient(135deg, #1e0a3c 0%, #3b1260 60%, #5c1f8a 100%)",
+    accent: "#e8c8ff",
+  },
+  {
+    id: 3,
+    image: "/Slider/Christ-the-king.png",
+    subheading: "Christ the King",
+    heading: "The Way & the Life",
+    quote:
+      "\u201cI am the way, and the truth, and the life. No one comes to the Father except through me. Let your hearts not be troubled.\u201d",
+    attribution: "\u2014 Jesus Christ, John 14:6",
+    cta: "Shop Sacred Items",
+    bg: "linear-gradient(135deg, #1b3a2d 0%, #2d5a3d 60%, #1a4d33 100%)",
+    accent: "#C9A84C",
+  },
 ];
 
-function FeatureCard({
-  p,
-}: {
-  p: {
-    id: number | string;
-    name: string;
-    image: string;
-    price: number;
-    oldPrice?: number;
-    unit: string;
-    rating: number;
-    reviewCount: number;
-  };
-}) {
-  const [wished, setWished] = useState(false);
-  const [showAction, setShowAction] = useState(false);
-  const [qty, setQty] = useState(1);
+const CATEGORIES = [
+  {
+    id: 1,
+    name: "Music & Audio",
+    image: "/Categories/Music-1.png",
+    color: "#e8f4fc",
+  },
+  {
+    id: 2,
+    name: "Books & Bibles",
+    image: "/Categories/Books-1.png",
+    color: "#fff3cd",
+  },
+  {
+    id: 3,
+    name: "Rosaries",
+    image: "/Categories/Rosary-1.png",
+    color: "#fce4ec",
+  },
+  {
+    id: 4,
+    name: "Statues",
+    image: "/Categories/Statue-1.png",
+    color: "#d4edda",
+  },
+  {
+    id: 5,
+    name: "Candles",
+    image: "/Categories/Candle-1.png",
+    color: "#fff9c4",
+  },
+  {
+    id: 6,
+    name: "Apparel",
+    image: "/Categories/Apparel-1.png",
+    color: "#e2d9f3",
+  },
+  { id: 7, name: "Gifts", image: "/Categories/Gifts-1.png", color: "#fce0c8" },
+  {
+    id: 8,
+    name: "Children's",
+    image: "/Categories/Children-1.png",
+    color: "#e8f5e9",
+  },
+  {
+    id: 9,
+    name: "Jewelry",
+    image: "/Categories/Jewerly-1.png",
+    color: "#fff8e1",
+  },
+  {
+    id: 10,
+    name: "Sacramentals",
+    image: "/Categories/Sacramentals-1.png",
+    color: "#e3f2fd",
+  },
+];
 
+const PROMO_BANNERS = [
+  {
+    id: 1,
+    brand: "Sacred Sounds",
+    headline: "New Albums Just Dropped",
+    subtext: "Praise & Worship · Gospel · Devotional",
+    cta: "Listen & Shop",
+    gradient: "linear-gradient(135deg, #e8edff 0%, #c9d4ff 100%)",
+    accent: "#3b5bdb",
+    badge: "NEW",
+    icon: "🎵",
+  },
+  {
+    id: 2,
+    brand: "Holy Scripture",
+    headline: "Up to 30% Off Bibles",
+    subtext: "Catholic, Protestant & Study Editions",
+    cta: "Shop Bibles",
+    gradient: "linear-gradient(135deg, #fff8e1 0%, #fde089 100%)",
+    accent: "#9a6a00",
+    badge: "30% OFF",
+    icon: "📖",
+  },
+  {
+    id: 3,
+    brand: "Sacred Gifts",
+    headline: "Easter Collection",
+    subtext: "Rosaries, Statues & Blessed Items",
+    cta: "Shop Easter",
+    gradient: "linear-gradient(135deg, #e8f5ee 0%, #bbedd3 100%)",
+    accent: "#1b6b3a",
+    badge: "SEASONAL",
+    icon: "✝️",
+  },
+];
+
+// FEATURED_PRODUCTS imported from ../lib/products
+
+// ─── Scrolling Ticker (Nykaa-style infinite marquee between nav and hero) ─────
+function ScrollingTicker() {
+  const segment =
+    "✝  NEW ALBUM OUT NOW  ·  FREE SHIPPING ON ORDERS ABOVE TZS 50,000  ·  EASTER COLLECTION IS LIVE  ·  30% OFF ALL BIBLES  ·  SACRED GIFT SETS NOW IN STOCK  ·  ROSARIES FROM TZS 8,000  ·  NEW DEVOTIONAL BOOKS JUST ARRIVED  ·  ";
   return (
-    <div className="feature-card">
-      <div className="feature-media">
-        <div className="feature-label">
-          <label className="label-text feat">feature</label>
-        </div>
-        <button
-          className={`feature-wish wish${wished ? " active" : ""}`}
-          onClick={() => setWished(!wished)}
-        >
-          <i className="fas fa-heart"></i>
-        </button>
-        <Link className="feature-image" to={`/product/${p.id}`}>
-          <img src={p.image} alt={p.name} />
-        </Link>
-        <div className="feature-widget">
-          <Link
-            className="fas fa-random"
-            to="/compare"
-            title="Product Compare"
-          />
-          <a title="Product View" href="#" className="fas fa-eye" />
-        </div>
-      </div>
-      <div className="feature-content">
-        <h6 className="feature-name">
-          <Link to={`/product/${p.id}`}>{p.name}</Link>
-        </h6>
-        <div className="feature-rating">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <i
-              key={i}
-              className={`icofont-star${i < p.rating ? " active" : ""}`}
-            ></i>
-          ))}
-          <Link to={`/product/${p.id}`}>({p.reviewCount} Reviews)</Link>
-        </div>
-        <h6 className="feature-price">
-          <del>${p.oldPrice}</del>
-          <span>
-            ${p.price}
-            <small>/{p.unit}</small>
-          </span>
-        </h6>
-        <p className="feature-desc">
-          Lorem ipsum dolor sit consectetur adipisicing xpedita dicta amet olor
-          ut eveniet commodi...
-        </p>
-        {!showAction ? (
-          <button
-            className="product-add"
-            title="Add to Cart"
-            onClick={() => setShowAction(true)}
-          >
-            <i className="fas fa-shopping-basket"></i>
-            <span>add</span>
-          </button>
-        ) : (
-          <div className="product-action" style={{ display: "flex" }}>
-            <button
-              className="action-minus"
-              title="Quantity Minus"
-              onClick={() => setQty((q) => Math.max(1, q - 1))}
-              disabled={qty <= 1}
-            >
-              <i className="icofont-minus"></i>
-            </button>
-            <input
-              className="action-input"
-              title="Quantity Number"
-              type="text"
-              readOnly
-              value={qty}
-            />
-            <button
-              className="action-plus"
-              title="Quantity Plus"
-              onClick={() => setQty((q) => q + 1)}
-            >
-              <i className="icofont-plus"></i>
-            </button>
-          </div>
-        )}
+    <div
+      style={{
+        background: "#1a1a2e",
+        overflow: "hidden",
+        height: 34,
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      <div className="ticker-track">
+        <span className="ticker-content">{segment}</span>
+        <span className="ticker-content">{segment}</span>
       </div>
     </div>
   );
 }
 
-export default function Home() {
-  const [activeTab, setActiveTab] = useState("top-order");
-
-  const [dbProducts, setDbProducts] = useState<Product[]>([]);
-  const [dbCategories, setDbCategories] = useState<Category[]>([]);
-  const [dbBrands, setDbBrands] = useState<Brand[]>([]);
+// ─── Hero Banner Carousel ─────────────────────────────────────────────────────
+function HeroBanner() {
+  const [current, setCurrent] = useState(0);
 
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      const [products, categories, brands] = await Promise.all([
-        loadProducts(80),
-        loadCategories(20),
-        loadBrands(20),
-      ]);
-      if (!mounted) return;
-      setDbProducts(products);
-      setDbCategories(categories);
-      setDbBrands(brands);
-    })();
-
-    return () => {
-      mounted = false;
-    };
+    const t = setInterval(
+      () => setCurrent((c) => (c + 1) % SLIDES.length),
+      5000,
+    );
+    return () => clearInterval(t);
   }, []);
 
-  const mappedDbProducts = useMemo(
-    () =>
-      dbProducts.map((p, idx) => ({
-        id: p.id,
-        name: p.name,
-        image:
-          p.image_url ||
-          asset(`product/${String((idx % 20) + 1).padStart(2, "0")}.jpg`),
-        price: Number(p.price) || 0,
-        oldPrice: undefined,
-        unit: "piece",
-        rating: 4,
-        reviewCount: 0,
-        labels: p.is_featured ? (["sale"] as string[]) : ([] as string[]),
-      })),
-    [dbProducts],
+  const slide = SLIDES[current];
+
+  return (
+    <section
+      style={{
+        position: "relative",
+        overflow: "hidden",
+        background: slide.bg,
+        transition: "background 0.8s ease",
+      }}
+    >
+      <div
+        className="hero-inner"
+        style={{
+          maxWidth: 1280,
+          margin: "0 auto",
+          padding: "0 48px",
+          display: "flex",
+          alignItems: "center",
+          minHeight: 500,
+          gap: 60,
+        }}
+      >
+        {/* Text block */}
+        <div style={{ flex: 1, zIndex: 2, padding: "72px 0" }}>
+          <span
+            style={{
+              display: "inline-block",
+              background: slide.accent,
+              color: "#1a1a2e",
+              padding: "4px 14px",
+              borderRadius: 4,
+              fontSize: 11,
+              fontWeight: 800,
+              letterSpacing: "1.2px",
+              marginBottom: 20,
+              textTransform: "uppercase",
+            }}
+          >
+            {slide.subheading}
+          </span>
+          <h1
+            className="hero-h1"
+            style={{
+              color: "#fff",
+              fontSize: 58,
+              fontWeight: 900,
+              lineHeight: 1.05,
+              margin: "0 0 20px",
+              textShadow: "0 2px 12px rgba(0,0,0,0.3)",
+            }}
+          >
+            {slide.heading}
+          </h1>
+          <p
+            style={{
+              color: "rgba(255,255,255,0.88)",
+              fontSize: 16,
+              fontStyle: "italic",
+              lineHeight: 1.75,
+              maxWidth: 420,
+              margin: "0 0 12px",
+              borderLeft: `3px solid ${slide.accent}`,
+              paddingLeft: 16,
+            }}
+          >
+            {slide.quote}
+          </p>
+          <p
+            style={{
+              color: slide.accent,
+              fontSize: 13.5,
+              fontWeight: 700,
+              letterSpacing: "0.02em",
+              marginBottom: 32,
+              paddingLeft: 19,
+            }}
+          >
+            {slide.attribution}
+          </p>
+          <a
+            href="#shop"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              background: slide.accent,
+              color: "#1a1a2e",
+              padding: "14px 32px",
+              borderRadius: 8,
+              fontWeight: 700,
+              fontSize: 15,
+              textDecoration: "none",
+              boxShadow: `0 6px 20px rgba(0,0,0,0.25)`,
+              letterSpacing: "0.3px",
+            }}
+          >
+            {slide.cta} <span style={{ fontSize: 16 }}>→</span>
+          </a>
+        </div>
+
+        {/* Decorative image panel */}
+        <div
+          className="hero-image-panel"
+          style={{
+            width: 400,
+            height: 400,
+            flexShrink: 0,
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: `radial-gradient(circle, ${slide.accent}30 0%, transparent 70%)`,
+              borderRadius: "50%",
+              transform: "scale(1.2)",
+            }}
+          />
+          <img
+            key={slide.id}
+            src={slide.image}
+            alt={slide.heading}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "top center",
+              borderRadius: 24,
+              boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
+              position: "relative",
+              zIndex: 1,
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Slide dots */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 22,
+          left: "50%",
+          transform: "translateX(-50%)",
+          display: "flex",
+          gap: 8,
+          zIndex: 10,
+        }}
+      >
+        {SLIDES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrent(i)}
+            style={{
+              width: i === current ? 28 : 8,
+              height: 8,
+              borderRadius: 4,
+              background: i === current ? "#D4AF37" : "rgba(255,255,255,0.4)",
+              border: "none",
+              cursor: "pointer",
+              padding: 0,
+              transition: "all 0.3s",
+            }}
+          />
+        ))}
+      </div>
+    </section>
   );
+}
 
-  const suggestItems = dbCategories.slice(0, 8).map((c, idx) => ({
-    img:
-      c.image_url ||
-      asset(`suggest/${String((idx % 8) + 1).padStart(2, "0")}.jpg`),
-    name: c.name,
-    count: 0,
-  }));
+// ─── Featured Categories ──────────────────────────────────────────────────────
+function FeaturedCategories() {
+  return (
+    <section
+      className="section-pad"
+      style={{ padding: "52px 0 60px", background: "#ffffff" }}
+    >
+      <div
+        className="section-inner"
+        style={{ maxWidth: 1280, margin: "0 auto", padding: "0 24px" }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "baseline",
+            justifyContent: "space-between",
+            marginBottom: 28,
+          }}
+        >
+          <div>
+            <h2
+              style={{
+                fontSize: 22,
+                fontWeight: 800,
+                color: "#1a1a2e",
+                margin: "0 0 4px",
+                letterSpacing: "-0.2px",
+              }}
+            >
+              Shop by Category
+            </h2>
+            <p style={{ color: "#999", fontSize: 13.5, margin: 0 }}>
+              Everything you need to nourish your faith
+            </p>
+          </div>
+          <a
+            href="#"
+            style={{
+              fontSize: 13.5,
+              fontWeight: 700,
+              color: "#C9A84C",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            See all →
+          </a>
+        </div>
+        <div
+          className="cat-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(10, 1fr)",
+            gap: 12,
+          }}
+        >
+          {CATEGORIES.map((cat) => (
+            <a
+              key={cat.id}
+              href={`#${cat.name}`}
+              className="cat-card"
+              style={{
+                textDecoration: "none",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                background: "#fff",
+                borderRadius: 16,
+                border: "1.5px solid #f0f0f0",
+                overflow: "hidden",
+                transition:
+                  "box-shadow 0.2s, border-color 0.2s, transform 0.2s",
+                cursor: "pointer",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = "0 8px 28px rgba(0,0,0,0.10)";
+                e.currentTarget.style.borderColor = "#C9A84C";
+                e.currentTarget.style.transform = "translateY(-3px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = "";
+                e.currentTarget.style.borderColor = "#f0f0f0";
+                e.currentTarget.style.transform = "";
+              }}
+            >
+              {/* Image area */}
+              <div
+                style={{
+                  width: "100%",
+                  aspectRatio: "1 / 1",
+                  background: cat.color,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                  padding: "10px 10px 6px",
+                  boxSizing: "border-box",
+                }}
+              >
+                <img
+                  src={cat.image}
+                  alt={cat.name}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    maxHeight: 90,
+                    transition: "transform 0.25s",
+                  }}
+                  onMouseEnter={(e) =>
+                    ((e.currentTarget as HTMLImageElement).style.transform =
+                      "scale(1.07)")
+                  }
+                  onMouseLeave={(e) =>
+                    ((e.currentTarget as HTMLImageElement).style.transform = "")
+                  }
+                />
+              </div>
+              {/* Label */}
+              <div
+                style={{
+                  padding: "9px 8px 11px",
+                  textAlign: "center",
+                  width: "100%",
+                  boxSizing: "border-box",
+                  borderTop: "1px solid #f5f5f5",
+                  background: "#fff",
+                }}
+              >
+                <span
+                  className="cat-label"
+                  style={{
+                    fontSize: 11.5,
+                    fontWeight: 700,
+                    color: "#1a1a2e",
+                    lineHeight: 1.3,
+                    display: "block",
+                  }}
+                >
+                  {cat.name}
+                </span>
+              </div>
+            </a>
+          ))}
+        </div>
 
-  const sampleProducts = mappedDbProducts.slice(0, 10);
+        <style>{`
+          @media (max-width: 1100px) {
+            .cat-grid { grid-template-columns: repeat(5, 1fr) !important; }
+          }
+          @media (max-width: 640px) {
+            .cat-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 8px !important; }
+          }
+          @media (max-width: 400px) {
+            .cat-grid { grid-template-columns: repeat(3, 1fr) !important; }
+          }
+        `}</style>
+      </div>
+    </section>
+  );
+}
 
-  const featuredProducts = mappedDbProducts.slice(0, 6);
+// ─── Promo Banners (Nykaa 3-col layout) ──────────────────────────────────────
+function PromoBanners() {
+  return (
+    <section
+      className="section-pad"
+      style={{ padding: "72px 0", background: "#fafafa" }}
+    >
+      <div
+        className="section-inner"
+        style={{ maxWidth: 1280, margin: "0 auto", padding: "0 24px" }}
+      >
+        {/* Section header */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "baseline",
+            justifyContent: "space-between",
+            marginBottom: 32,
+          }}
+        >
+          <div>
+            <h2
+              style={{
+                fontSize: 22,
+                fontWeight: 800,
+                color: "#1a1a2e",
+                margin: "0 0 4px",
+                letterSpacing: "-0.2px",
+              }}
+            >
+              Exclusive Offers
+            </h2>
+            <p style={{ color: "#999", fontSize: 13.5, margin: 0 }}>
+              Carefully curated collections at special prices
+            </p>
+          </div>
+          <a
+            href="#"
+            style={{
+              fontSize: 13.5,
+              fontWeight: 700,
+              color: "#C9A84C",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.textDecoration = "underline")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.textDecoration = "none")
+            }
+          >
+            View all offers →
+          </a>
+        </div>
 
-  const newProducts = mappedDbProducts.slice(0, 10).map((p) => ({
-    ...p,
-    labels: ["new"] as string[],
-  }));
+        <div
+          className="promo-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 20,
+          }}
+        >
+          {PROMO_BANNERS.map((b) => (
+            <div
+              key={b.id}
+              className="promo-card"
+              style={{
+                background: "#fff",
+                borderRadius: 20,
+                overflow: "hidden",
+                border: "1.5px solid #f0f0f0",
+                cursor: "pointer",
+                transition:
+                  "box-shadow 0.22s, transform 0.22s, border-color 0.22s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow =
+                  "0 12px 36px rgba(0,0,0,0.10)";
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.borderColor = b.accent + "55";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = "";
+                e.currentTarget.style.transform = "";
+                e.currentTarget.style.borderColor = "#f0f0f0";
+              }}
+            >
+              {/* Top gradient panel */}
+              <div
+                style={{
+                  background: b.gradient,
+                  height: 148,
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                }}
+              >
+                {/* Decorative circles */}
+                <div
+                  style={{
+                    position: "absolute",
+                    right: -36,
+                    bottom: -36,
+                    width: 140,
+                    height: 140,
+                    borderRadius: "50%",
+                    background: "rgba(255,255,255,0.3)",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    left: -24,
+                    top: -24,
+                    width: 96,
+                    height: 96,
+                    borderRadius: "50%",
+                    background: "rgba(255,255,255,0.2)",
+                  }}
+                />
+                {/* Badge */}
+                {b.badge && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: 16,
+                      left: 16,
+                      background: b.accent,
+                      color: "#fff",
+                      fontSize: 10,
+                      fontWeight: 800,
+                      padding: "4px 12px",
+                      borderRadius: 4,
+                      letterSpacing: "0.8px",
+                    }}
+                  >
+                    {b.badge}
+                  </span>
+                )}
+                {/* Icon */}
+                <span
+                  style={{
+                    fontSize: 52,
+                    position: "relative",
+                    zIndex: 1,
+                    filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.1))",
+                  }}
+                >
+                  {b.icon}
+                </span>
+              </div>
 
-  const nicheOrderProducts = mappedDbProducts.slice(0, 10).map((p) => ({
-    ...p,
-    labels: ["order"] as string[],
-    labelText: "new",
-  }));
+              {/* Card body */}
+              <div style={{ padding: "22px 24px 26px" }}>
+                <p
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 800,
+                    color: b.accent,
+                    letterSpacing: "1px",
+                    textTransform: "uppercase",
+                    margin: "0 0 8px",
+                  }}
+                >
+                  {b.brand}
+                </p>
+                <h3
+                  style={{
+                    fontSize: 21,
+                    fontWeight: 800,
+                    color: "#1a1a2e",
+                    margin: "0 0 8px",
+                    lineHeight: 1.22,
+                    letterSpacing: "-0.2px",
+                  }}
+                >
+                  {b.headline}
+                </h3>
+                <p
+                  style={{
+                    color: "#888",
+                    fontSize: 13.5,
+                    margin: "0 0 22px",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {b.subtext}
+                </p>
+                <a
+                  href="#"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    background: b.accent,
+                    color: "#fff",
+                    padding: "11px 22px",
+                    borderRadius: 8,
+                    fontSize: 13.5,
+                    fontWeight: 700,
+                    textDecoration: "none",
+                    letterSpacing: "0.2px",
+                    transition: "opacity 0.15s",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
+                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                >
+                  {b.cta} →
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
-  const nicheRateProducts = mappedDbProducts.slice(0, 10).map((p) => ({
-    ...p,
-    labels: ["rate"] as string[],
-    labelText: "4.8",
-  }));
+// ─── Product Card ─────────────────────────────────────────────────────────────
+function ProductCard({
+  product,
+  onAddToCart,
+}: {
+  product: Product;
+  onAddToCart: (p: Product) => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const [qty, setQty] = useState(0);
+  const navigate = useNavigate();
+  const discount = product.originalPrice
+    ? Math.round((1 - product.price / product.originalPrice) * 100)
+    : 0;
 
-  const nicheDiscProducts = mappedDbProducts.slice(0, 10).map((p) => ({
-    ...p,
-    labels: ["off"] as string[],
-    labelText: "-10%",
-  }));
+  function handleAdd() {
+    setQty(1);
+    onAddToCart(product);
+  }
+  function handleIncrease() {
+    setQty((q) => q + 1);
+    onAddToCart(product);
+  }
+  function handleDecrease() {
+    setQty((q) => (q > 1 ? q - 1 : 0));
+  }
 
-  const brands = dbBrands.slice(0, 6).map((b, idx) => ({
-    img:
-      b.image_url ||
-      asset(`brand/${String((idx % 6) + 1).padStart(2, "0")}.jpg`),
-    name: b.name,
-    count: 0,
-  }));
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={() => navigate(`/product/${product.id}`)}
+      className="prod-card"
+      style={{
+        background: "#fff",
+        borderRadius: 12,
+        border: `1px solid ${hovered ? "#D4AF37" : "#e8e8e8"}`,
+        transition: "border-color 0.18s, box-shadow 0.18s",
+        boxShadow: hovered
+          ? "0 4px 16px rgba(0,0,0,0.10)"
+          : "0 1px 4px rgba(0,0,0,0.06)",
+        cursor: "pointer",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
+      {/* Image area — white bg, product contained with padding like Blinkit */}
+      <div
+        className="prod-img"
+        style={{
+          position: "relative",
+          height: 185,
+          background: "#fff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "16px 16px 8px",
+          boxSizing: "border-box",
+        }}
+      >
+        <img
+          src={product.image}
+          alt={product.name}
+          style={{
+            maxWidth: "100%",
+            maxHeight: "100%",
+            width: "auto",
+            height: "auto",
+            objectFit: "contain",
+            display: "block",
+          }}
+        />
 
-  const nicheData: Record<string, typeof nicheOrderProducts> = {
-    "top-order": nicheOrderProducts,
-    "top-rate": nicheRateProducts,
-    "top-disc": nicheDiscProducts,
+        {/* Discount badge — top-left */}
+        {discount > 0 && (
+          <span
+            className="prod-badge"
+            style={{
+              position: "absolute",
+              top: 8,
+              left: 8,
+              background: "#1a1a2e",
+              color: "#D4AF37",
+              fontSize: 10,
+              fontWeight: 800,
+              lineHeight: 1.2,
+              padding: "3px 7px",
+              borderRadius: 5,
+            }}
+          >
+            {discount}% OFF
+          </span>
+        )}
+
+        {/* Text badge (NEW / SALE / BESTSELLER) — top-left */}
+        {product.badge && !discount && (
+          <span
+            className="prod-badge"
+            style={{
+              position: "absolute",
+              top: 8,
+              left: 8,
+              background: "rgba(26,26,46,0.85)",
+              color: "#D4AF37",
+              fontSize: 9,
+              fontWeight: 800,
+              padding: "3px 8px",
+              borderRadius: 5,
+              letterSpacing: "0.5px",
+              textTransform: "uppercase",
+            }}
+          >
+            {product.badge}
+          </span>
+        )}
+      </div>
+
+      {/* Divider */}
+      <div style={{ height: 1, background: "#f0f0f0", margin: "0 12px" }} />
+
+      {/* Info */}
+      <div
+        className="prod-info"
+        style={{
+          padding: "10px 12px 12px",
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+        }}
+      >
+        {/* Delivery chip */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            marginBottom: 6,
+          }}
+        >
+          <svg
+            width="11"
+            height="11"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#888"
+            strokeWidth="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          <span style={{ fontSize: 11, color: "#888", fontWeight: 500 }}>
+            Ships in 2–3 days
+          </span>
+        </div>
+
+        {/* Product name */}
+        <h4
+          className="prod-name"
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            color: "#1a1a1a",
+            margin: "0 0 2px",
+            lineHeight: 1.4,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+          {product.name}
+        </h4>
+
+        {/* Weight / variant */}
+        <p
+          className="prod-cat"
+          style={{
+            fontSize: 12,
+            color: "#999",
+            margin: "0 0 10px",
+            lineHeight: 1.3,
+          }}
+        >
+          {product.weight ?? product.category}
+        </p>
+
+        {/* Price row */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "baseline",
+            gap: 6,
+            marginBottom: 10,
+          }}
+        >
+          <span
+            className="prod-price"
+            style={{ fontSize: 15, fontWeight: 700, color: "#1a1a1a" }}
+          >
+            TZS {product.price.toLocaleString()}
+          </span>
+          {product.originalPrice && (
+            <span
+              className="prod-orig"
+              style={{
+                fontSize: 12,
+                color: "#bbb",
+                textDecoration: "line-through",
+              }}
+            >
+              TZS {product.originalPrice.toLocaleString()}
+            </span>
+          )}
+        </div>
+
+        {/* ADD / stepper — full width, at bottom */}
+        <div style={{ marginTop: "auto" }}>
+          {qty === 0 ? (
+            <button
+              className="prod-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAdd();
+              }}
+              style={{
+                width: "100%",
+                border: "1.5px solid #C9A84C",
+                background: "#fff",
+                color: "#C9A84C",
+                fontWeight: 700,
+                fontSize: 13,
+                letterSpacing: "0.5px",
+                padding: "7px 0",
+                borderRadius: 8,
+                cursor: "pointer",
+                transition: "background 0.15s, color 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#C9A84C";
+                e.currentTarget.style.color = "#fff";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "#fff";
+                e.currentTarget.style.color = "#C9A84C";
+              }}
+            >
+              ADD
+            </button>
+          ) : (
+            <div
+              className="prod-btn"
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                border: "1.5px solid #C9A84C",
+                borderRadius: 8,
+                overflow: "hidden",
+                background: "#C9A84C",
+              }}
+            >
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDecrease();
+                }}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  fontWeight: 800,
+                  fontSize: 20,
+                  width: 36,
+                  height: 34,
+                  cursor: "pointer",
+                  lineHeight: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                −
+              </button>
+              <span style={{ fontWeight: 700, fontSize: 14, color: "#fff" }}>
+                {qty}
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleIncrease();
+                }}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  fontWeight: 800,
+                  fontSize: 20,
+                  width: 36,
+                  height: 34,
+                  cursor: "pointer",
+                  lineHeight: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                +
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Featured Products ────────────────────────────────────────────────────────
+function FeaturedProducts({
+  onAddToCart,
+}: {
+  onAddToCart: (p: Product) => void;
+}) {
+  return (
+    <section
+      className="section-pad"
+      style={{ padding: "64px 0", background: "#fff" }}
+      id="shop"
+    >
+      <div
+        className="section-inner"
+        style={{ maxWidth: 1280, margin: "0 auto", padding: "0 24px" }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            marginBottom: 36,
+          }}
+        >
+          <div>
+            <h2
+              style={{
+                fontSize: 28,
+                fontWeight: 700,
+                color: "#1a1a2e",
+                margin: "0 0 8px",
+              }}
+            >
+              Featured Products
+            </h2>
+            <p style={{ color: "#888", fontSize: 15, margin: 0 }}>
+              Handpicked for your spiritual journey
+            </p>
+          </div>
+          <a
+            href="#"
+            style={{
+              color: "#C9A84C",
+              fontWeight: 600,
+              fontSize: 14,
+              textDecoration: "none",
+            }}
+          >
+            View All →
+          </a>
+        </div>
+        <div
+          className="prod-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: 20,
+          }}
+        >
+          {FEATURED_PRODUCTS.map((p) => (
+            <ProductCard key={p.id} product={p} onAddToCart={onAddToCart} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Featured Videos ────────────────────────────────────────────────────────
+const VIDEO_ITEMS = [
+  {
+    id: 1,
+    title: "Mungu Wangu ni Mkuu",
+    platform: "youtube" as const,
+    // Replace with your actual YouTube video ID
+    embedUrl: "https://www.youtube.com/embed/7wtfhZwyrcc",
+  },
+  {
+    id: 2,
+    title: "Yesu ni Bwana",
+    platform: "youtube" as const,
+    // Replace with your actual YouTube video ID
+    embedUrl: "https://www.youtube.com/embed/4Yj_M3nqPZo",
+  },
+  {
+    id: 3,
+    title: "Usiniache Bwana",
+    platform: "tiktok" as const,
+    // Replace with your actual TikTok video ID
+    embedUrl: "https://www.tiktok.com/embed/v2/7321234567890123456",
+  },
+  {
+    id: 4,
+    title: "Niko Tayari",
+    platform: "youtube" as const,
+    // Replace with your actual YouTube video ID
+    embedUrl: "https://www.youtube.com/embed/GG3GJaHqLAo",
+  },
+];
+
+function FeaturedVideos() {
+  return (
+    <section
+      className="section-pad"
+      style={{ padding: "64px 0", background: "#fff" }}
+    >
+      <div
+        className="section-inner"
+        style={{ maxWidth: 1280, margin: "0 auto", padding: "0 24px" }}
+      >
+        <div style={{ marginBottom: 36 }}>
+          <h2
+            style={{
+              fontSize: 28,
+              fontWeight: 700,
+              color: "#1a1a2e",
+              margin: "0 0 8px",
+            }}
+          >
+            Featured Videos
+          </h2>
+          <p style={{ color: "#888", fontSize: 15, margin: 0 }}>
+            Handpicked for your spiritual journey
+          </p>
+        </div>
+        <div
+          className="vid-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: 20,
+          }}
+        >
+          {VIDEO_ITEMS.map((v) => (
+            <div key={v.id}>
+              {/* 16:9 aspect-ratio wrapper */}
+              <div
+                style={{
+                  position: "relative",
+                  paddingBottom: "56.25%",
+                  height: 0,
+                  overflow: "hidden",
+                  borderRadius: 12,
+                  background: "#1a1a2e",
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
+                }}
+              >
+                <iframe
+                  src={v.embedUrl}
+                  title={v.title}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    border: 0,
+                  }}
+                />
+              </div>
+              <p
+                style={{
+                  marginTop: 10,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: "#1a1a2e",
+                  textAlign: "center",
+                }}
+              >
+                {v.title}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Trust Badges ─────────────────────────────────────────────────────────────
+const TrustIconTruck = () => (
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="1" y="3" width="15" height="13" rx="1" />
+    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+    <circle cx="5.5" cy="18.5" r="2.5" />
+    <circle cx="18.5" cy="18.5" r="2.5" />
+  </svg>
+);
+const TrustIconCross = () => (
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+  >
+    <line x1="12" y1="2" x2="12" y2="22" />
+    <line x1="5" y1="8" x2="19" y2="8" />
+  </svg>
+);
+const TrustIconShield = () => (
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    <polyline points="9 12 11 14 15 10" />
+  </svg>
+);
+const TrustIconReturn = () => (
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polyline points="1 4 1 10 7 10" />
+    <path d="M3.51 15a9 9 0 1 0 .49-3.7" />
+  </svg>
+);
+
+function TrustBadges() {
+  const badges = [
+    {
+      Icon: TrustIconTruck,
+      title: "Free Shipping",
+      desc: "On orders above TZS 50,000",
+      bg: "#edf4ff",
+      color: "#2563eb",
+    },
+    {
+      Icon: TrustIconCross,
+      title: "Blessed & Certified",
+      desc: "Church approved products",
+      bg: "#fffbf0",
+      color: "#b8860b",
+    },
+    {
+      Icon: TrustIconShield,
+      title: "Secure Payments",
+      desc: "M-Pesa, Visa & more",
+      bg: "#edfaf3",
+      color: "#16a34a",
+    },
+    {
+      Icon: TrustIconReturn,
+      title: "Easy Returns",
+      desc: "30-day return policy",
+      bg: "#f5eeff",
+      color: "#7c3aed",
+    },
+  ];
+
+  return (
+    <section
+      className="trust-section"
+      style={{
+        padding: "36px 0",
+        background: "#fafafa",
+        borderTop: "1px solid #f0f0f0",
+        borderBottom: "1px solid #f0f0f0",
+      }}
+    >
+      <div
+        className="trust-grid trust-inner"
+        style={{
+          maxWidth: 1280,
+          margin: "0 auto",
+          padding: "0 24px",
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: 14,
+        }}
+      >
+        {badges.map((b) => (
+          <div
+            key={b.title}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 16,
+              padding: "20px 22px",
+              background: "#fff",
+              border: "1.5px solid #efefef",
+              borderRadius: 16,
+              transition:
+                "box-shadow 0.22s, border-color 0.22s, transform 0.18s",
+              cursor: "default",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = "0 6px 22px rgba(0,0,0,0.08)";
+              e.currentTarget.style.borderColor = "#D4AF37";
+              e.currentTarget.style.transform = "translateY(-2px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = "";
+              e.currentTarget.style.borderColor = "#efefef";
+              e.currentTarget.style.transform = "";
+            }}
+          >
+            <div
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 14,
+                background: b.bg,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                color: b.color,
+              }}
+            >
+              <b.Icon />
+            </div>
+            <div>
+              <p
+                style={{
+                  color: "#1a1a2e",
+                  fontWeight: 700,
+                  fontSize: 13.5,
+                  margin: "0 0 3px",
+                  letterSpacing: "-0.1px",
+                }}
+              >
+                {b.title}
+              </p>
+              <p
+                style={{
+                  color: "#aaa",
+                  fontSize: 12,
+                  margin: 0,
+                  lineHeight: 1.5,
+                }}
+              >
+                {b.desc}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ─── Newsletter ───────────────────────────────────────────────────────────────
+function Newsletter() {
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email.trim()) setSubscribed(true);
   };
 
   return (
-    <>
-      {/* Banner */}
-      <section className="banner-part">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-4 order-1 order-lg-0 order-xl-0">
-              <div className="row">
-                <div className="col-sm-6 col-lg-12">
-                  <div className="home-grid-promo">
-                    <a href="#">
-                      <img src={asset("promo/home/01.jpg")} alt="promo" />
-                    </a>
-                  </div>
-                </div>
-                <div className="col-sm-6 col-lg-12">
-                  <div className="home-grid-promo">
-                    <a href="#">
-                      <img src={asset("promo/home/02.jpg")} alt="promo" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-8 order-0 order-lg-1 order-xl-1">
-              <Slider
-                className="home-grid-slider slider-arrow slider-dots"
-                dots={true}
-                fade={false}
-                infinite={true}
-                autoplay={true}
-                autoplaySpeed={4000}
-                arrows={true}
-                speed={600}
-                prevArrow={<SliderArrow direction="prev" />}
-                nextArrow={<SliderArrow direction="next" />}
-                slidesToShow={1}
-                slidesToScroll={1}
-                responsive={[{ breakpoint: 576, settings: { arrows: false } }]}
-              >
-                <a href="#">
-                  <img src={asset("home/grid/01.jpg")} alt="banner" />
-                </a>
-                <a href="#">
-                  <img src={asset("home/grid/02.jpg")} alt="banner" />
-                </a>
-              </Slider>
-            </div>
-          </div>
+    <section
+      className="nl-section"
+      style={{
+        background: "#fff",
+        padding: "48px 24px",
+        borderTop: "1px solid #f0f0f0",
+      }}
+    >
+      <div style={{ maxWidth: 520, margin: "0 auto", textAlign: "center" }}>
+        {/* ── Decorative gold divider ── */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 14,
+            marginBottom: 22,
+          }}
+        >
+          <div
+            style={{
+              height: 1,
+              width: 52,
+              background: "linear-gradient(to right, transparent, #D4AF37)",
+            }}
+          />
+          <span style={{ fontSize: 16, color: "#D4AF37", lineHeight: 1 }}>
+            ✝
+          </span>
+          <div
+            style={{
+              height: 1,
+              width: 52,
+              background: "linear-gradient(to left, transparent, #D4AF37)",
+            }}
+          />
         </div>
-      </section>
 
-      {/* Suggest Categories */}
-      <section className="section suggest-part">
-        <div className="container">
-          <Slider
-            className="suggest-slider slider-arrow"
-            dots={false}
-            infinite={true}
-            autoplay={true}
-            autoplaySpeed={3000}
-            arrows={true}
-            speed={1000}
-            prevArrow={<SliderArrow direction="prev" />}
-            nextArrow={<SliderArrow direction="next" />}
-            slidesToShow={5}
-            slidesToScroll={2}
-            responsive={[
-              {
-                breakpoint: 1200,
-                settings: { slidesToShow: 4, slidesToScroll: 4 },
-              },
-              {
-                breakpoint: 992,
-                settings: { slidesToShow: 3, slidesToScroll: 3 },
-              },
-              {
-                breakpoint: 768,
-                settings: { slidesToShow: 2, slidesToScroll: 2 },
-              },
-              {
-                breakpoint: 576,
-                settings: { slidesToShow: 2, slidesToScroll: 2, arrows: false },
-              },
-            ]}
+        <h2
+          style={{
+            color: "#1a1a2e",
+            fontSize: 26,
+            fontWeight: 800,
+            margin: "0 0 10px",
+            letterSpacing: "-0.3px",
+          }}
+        >
+          Stay Inspired
+        </h2>
+        <p
+          style={{
+            color: "#888",
+            fontSize: 14.5,
+            margin: "0 0 24px",
+            lineHeight: 1.65,
+          }}
+        >
+          New releases, devotionals &amp; exclusive offers — straight to your
+          inbox.
+        </p>
+
+        {subscribed ? (
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 10,
+              background: "#f0faf5",
+              border: "1.5px solid #52c48a",
+              borderRadius: 12,
+              padding: "16px 32px",
+              color: "#1b6b3a",
+              fontWeight: 700,
+              fontSize: 15,
+            }}
           >
-            {suggestItems.length === 0 && (
-              <li>
-                <p>No categories available yet.</p>
-              </li>
-            )}
-            {suggestItems.map((item) => (
-              <li key={item.name}>
-                <Link className="suggest-card" to="/shop">
-                  <img src={item.img} alt={item.name} />
-                  <h5>
-                    {item.name} <span>{item.count} items</span>
-                  </h5>
-                </Link>
-              </li>
-            ))}
-          </Slider>
-        </div>
-      </section>
+            🙏 Thank you! You're now subscribed.
+          </div>
+        ) : (
+          <form
+            onSubmit={handleSubmit}
+            className="nl-form"
+            style={{
+              display: "flex",
+              maxWidth: 480,
+              margin: "0 auto",
+              background: "#f6f6f6",
+              borderRadius: 50,
+              border: "1.5px solid #e8e8e8",
+              overflow: "hidden",
+              padding: "5px 5px 5px 22px",
+            }}
+          >
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email address"
+              required
+              style={{
+                flex: 1,
+                border: "none",
+                background: "transparent",
+                color: "#1a1a2e",
+                fontSize: 14.5,
+                outline: "none",
+                minWidth: 0,
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                padding: "12px 28px",
+                background: "linear-gradient(135deg, #D4AF37, #C9A84C)",
+                color: "#1a1a2e",
+                border: "none",
+                borderRadius: 40,
+                fontWeight: 800,
+                fontSize: 14,
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                letterSpacing: "0.2px",
+              }}
+            >
+              Subscribe →
+            </button>
+          </form>
+        )}
 
-      {/* Recently Sold Items */}
-      <section className="section recent-part">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="section-heading">
-                <h2>recently sold items</h2>
-              </div>
-            </div>
-          </div>
-          <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-            {sampleProducts.length === 0 && (
-              <div className="col-12">
-                <p>No products available yet.</p>
-              </div>
-            )}
-            {sampleProducts.map((p) => (
-              <div className="col" key={p.id}>
-                <ProductCard {...p} />
-              </div>
-            ))}
-          </div>
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="section-btn-25">
-                <Link className="btn btn-outline" to="/shop">
-                  <i className="fas fa-eye"></i>
-                  <span>show more</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Promo Banner */}
-      <div className="section promo-part">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="promo-img">
-                <a href="#">
-                  <img src={asset("promo/home/03.jpg")} alt="promo" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+        <p style={{ fontSize: 12, color: "#ccc", marginTop: 18 }}>
+          No spam, ever. Unsubscribe anytime.
+        </p>
       </div>
+    </section>
+  );
+}
 
-      {/* Featured Items */}
-      <section className="section feature-part">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="section-heading">
-                <h2>our featured items</h2>
-              </div>
-            </div>
-          </div>
-          <div className="row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2">
-            {featuredProducts.length === 0 && (
-              <div className="col-12">
-                <p>No featured products available yet.</p>
-              </div>
-            )}
-            {featuredProducts.map((p) => (
-              <div className="col" key={p.id}>
-                <FeatureCard p={p} />
-              </div>
-            ))}
-          </div>
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="section-btn-25">
-                <Link className="btn btn-outline" to="/shop">
-                  <i className="fas fa-eye"></i>
-                  <span>show more</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+// ─── Main Page ────────────────────────────────────────────────────────────────
+export default function Home() {
+  const { addToCart } = useCart();
 
-      {/* Countdown */}
-      <section className="section countdown-part">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-lg-6 mx-auto">
-              <div className="countdown-content">
-                <h3>special discount offer for vegetable items</h3>
-                <p>
-                  Reprehenderit sed quod autem molestiae aut modi minus
-                  veritatis iste dolorum suscipit quis voluptatum fugiat
-                  mollitia quia minima
-                </p>
-                <div className="countdown countdown-clock">
-                  <span className="countdown-time">
-                    <span>00</span>
-                    <small>days</small>
-                  </span>
-                  <span className="countdown-time">
-                    <span>00</span>
-                    <small>hours</small>
-                  </span>
-                  <span className="countdown-time">
-                    <span>00</span>
-                    <small>minutes</small>
-                  </span>
-                  <span className="countdown-time">
-                    <span>00</span>
-                    <small>seconds</small>
-                  </span>
-                </div>
-                <Link className="btn btn-inline" to="/shop">
-                  <i className="fas fa-shopping-basket"></i>
-                  <span>shop now</span>
-                </Link>
-              </div>
-            </div>
-            <div className="col-lg-1"></div>
-            <div className="col-lg-5">
-              <div className="countdown-img">
-                <img src={asset("countdown.png")} alt="countdown" />
-                <div className="countdown-off">
-                  <span>20%</span>
-                  <span>off</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* New Items */}
-      <section className="section newitem-part">
-        <div className="container">
-          <div className="row">
-            <div className="col">
-              <div className="section-heading">
-                <h2>collected new items</h2>
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col">
-              <Slider
-                className="new-slider slider-arrow"
-                dots={false}
-                infinite={true}
-                autoplay={true}
-                autoplaySpeed={3000}
-                arrows={true}
-                speed={800}
-                slidesToShow={5}
-                slidesToScroll={1}
-                prevArrow={<SliderArrow direction="prev" />}
-                nextArrow={<SliderArrow direction="next" />}
-                responsive={[
-                  {
-                    breakpoint: 1200,
-                    settings: { slidesToShow: 4, slidesToScroll: 2 },
-                  },
-                  {
-                    breakpoint: 992,
-                    settings: { slidesToShow: 3, slidesToScroll: 3 },
-                  },
-                  {
-                    breakpoint: 768,
-                    settings: { slidesToShow: 2, slidesToScroll: 2 },
-                  },
-                  {
-                    breakpoint: 576,
-                    settings: {
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                      arrows: false,
-                    },
-                  },
-                ]}
-              >
-                {newProducts.length === 0 && (
-                  <div>
-                    <p>No new products available yet.</p>
-                  </div>
-                )}
-                {newProducts.map((p) => (
-                  <div key={p.id}>
-                    <ProductCard {...p} />
-                  </div>
-                ))}
-              </Slider>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col">
-              <div className="section-btn-25">
-                <Link className="btn btn-outline" to="/shop">
-                  <i className="fas fa-eye"></i>
-                  <span>show more</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Dual Promo */}
-      <div className="section promo-part">
-        <div className="container">
-          <div className="row">
-            <div className="col-sm-12 col-md-6 col-lg-6 px-xl-3">
-              <div className="promo-img">
-                <a href="#">
-                  <img src={asset("promo/home/01.jpg")} alt="promo" />
-                </a>
-              </div>
-            </div>
-            <div className="col-sm-12 col-md-6 col-lg-6 px-xl-3">
-              <div className="promo-img">
-                <a href="#">
-                  <img src={asset("promo/home/02.jpg")} alt="promo" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Browse by Top Niche */}
-      <section className="section niche-part">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="section-heading">
-                <h2>Browse by Top Niche</h2>
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-lg-12">
-              <ul className="nav nav-tabs">
-                <li>
-                  <button
-                    className={`tab-link${activeTab === "top-order" ? " active" : ""}`}
-                    onClick={() => setActiveTab("top-order")}
-                  >
-                    <i className="icofont-price"></i>
-                    <span>top order</span>
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className={`tab-link${activeTab === "top-rate" ? " active" : ""}`}
-                    onClick={() => setActiveTab("top-rate")}
-                  >
-                    <i className="icofont-star"></i>
-                    <span>top rating</span>
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className={`tab-link${activeTab === "top-disc" ? " active" : ""}`}
-                    onClick={() => setActiveTab("top-disc")}
-                  >
-                    <i className="icofont-sale-discount"></i>
-                    <span>top discount</span>
-                  </button>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-            {nicheData[activeTab].length === 0 && (
-              <div className="col-12">
-                <p>No products available for this section yet.</p>
-              </div>
-            )}
-            {nicheData[activeTab].map((p) => (
-              <div className="col" key={p.id}>
-                <ProductCard
-                  id={p.id}
-                  name={p.name}
-                  image={p.image}
-                  price={p.price}
-                  oldPrice={p.oldPrice}
-                  unit={p.unit}
-                  rating={p.rating}
-                  reviewCount={p.reviewCount}
-                  labels={p.labels}
-                  labelText={p.labelText}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Shop by Brands */}
-      <section className="section brand-part">
-        <div className="container">
-          <div className="row">
-            <div className="col-12">
-              <div className="section-heading">
-                <h2>shop by brands</h2>
-              </div>
-            </div>
-          </div>
-          <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6">
-            {brands.length === 0 && (
-              <div className="col-12">
-                <p>No brands available yet.</p>
-              </div>
-            )}
-            {brands.map((b) => (
-              <div className="col" key={b.name}>
-                <div className="brand-wrap">
-                  <div className="brand-media">
-                    <img src={b.img} alt={b.name} />
-                    <div className="brand-overlay">
-                      <Link to="/brand/1">
-                        <i className="fas fa-link"></i>
-                      </Link>
-                    </div>
-                  </div>
-                  <div className="brand-meta">
-                    <h4>{b.name}</h4>
-                    <p>({b.count} items)</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="section-btn-50">
-                <Link className="btn btn-outline" to="/brands">
-                  <i className="fas fa-eye"></i>
-                  <span>view all brands</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="section testimonial-part">
-        <div className="container">
-          <div className="row">
-            <div className="col-12">
-              <div className="section-heading">
-                <h2>client&apos;s feedback</h2>
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-lg-12">
-              <Slider
-                className="testimonial-slider slider-arrow"
-                dots={false}
-                infinite={true}
-                autoplay={false}
-                arrows={true}
-                fade={false}
-                speed={1000}
-                centerMode={true}
-                centerPadding="250px"
-                slidesToShow={1}
-                slidesToScroll={1}
-                prevArrow={<SliderArrow direction="prev" />}
-                nextArrow={<SliderArrow direction="next" />}
-                responsive={[
-                  {
-                    breakpoint: 1200,
-                    settings: {
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                      centerPadding: "250px",
-                    },
-                  },
-                  {
-                    breakpoint: 992,
-                    settings: {
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                      centerPadding: "130px",
-                    },
-                  },
-                  {
-                    breakpoint: 768,
-                    settings: {
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                      centerPadding: "40px",
-                    },
-                  },
-                  {
-                    breakpoint: 576,
-                    settings: {
-                      arrows: false,
-                      slidesToShow: 1,
-                      slidesToScroll: 1,
-                      centerPadding: "10px",
-                    },
-                  },
-                ]}
-              >
-                {testimonials.map((t, idx) => (
-                  <div key={idx}>
-                    <div className="testimonial-card">
-                      <i className="fas fa-quote-left"></i>
-                      <p>
-                        Lorem ipsum dolor consectetur adipisicing elit neque
-                        earum sapiente vitae obcaecati magnam doloribus magni
-                        provident ipsam
-                      </p>
-                      <h5>{t.name}</h5>
-                      <ul>
-                        <li className="fas fa-star"></li>
-                        <li className="fas fa-star"></li>
-                        <li className="fas fa-star"></li>
-                        <li className="fas fa-star"></li>
-                        <li className="fas fa-star"></li>
-                      </ul>
-                      <img src={t.img} alt="testimonial" />
-                    </div>
-                  </div>
-                ))}
-              </Slider>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Blog */}
-      <section className="section blog-part">
-        <div className="container">
-          <div className="row">
-            <div className="col-12">
-              <div className="section-heading">
-                <h2>Read our articles</h2>
-              </div>
-            </div>
-          </div>
-          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-            {[1, 2, 3].map((i) => (
-              <div className="col" key={i}>
-                <div className="blog-card">
-                  <div className="blog-media">
-                    <Link className="blog-img" to={`/blog/post-${i}`}>
-                      <img
-                        src={asset(`blog/${String(i).padStart(2, "0")}.jpg`)}
-                        alt="blog"
-                      />
-                    </Link>
-                  </div>
-                  <div className="blog-content">
-                    <ul className="blog-meta">
-                      <li>
-                        <i className="fas fa-user"></i>
-                        <span>admin</span>
-                      </li>
-                      <li>
-                        <i className="fas fa-calendar-alt"></i>
-                        <span>february 02, 2021</span>
-                      </li>
-                    </ul>
-                    <h4 className="blog-title">
-                      <Link to={`/blog/post-${i}`}>
-                        Voluptate blanditiis provident Lorem ipsum dolor sit
-                        amet
-                      </Link>
-                    </h4>
-                    <p className="blog-desc">
-                      Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                      Alias autem recusandae deleniti nam dignissimos sequi ...
-                    </p>
-                    <Link className="blog-btn" to={`/blog/post-${i}`}>
-                      <span>read more</span>
-                      <i className="icofont-arrow-right"></i>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="section-btn-25">
-                <Link className="btn btn-outline" to="/blog">
-                  <i className="fas fa-eye"></i>
-                  <span>view all blog</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
+  return (
+    <AppLayout>
+      <ScrollingTicker />
+      <HeroBanner />
+      <FeaturedCategories />
+      <PromoBanners />
+      <FeaturedProducts onAddToCart={addToCart} />
+      <FeaturedVideos />
+      <TrustBadges />
+      <Newsletter />
+    </AppLayout>
   );
 }

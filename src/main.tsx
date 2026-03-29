@@ -1,19 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import App from "./App";
-import { ShopProvider } from "./context/ShopContext";
-import { AppSettingsProvider } from "./context/AppSettingsContext";
 import "./index.css";
+import App from "./App";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
-      <AppSettingsProvider>
-        <ShopProvider>
-          <App />
-        </ShopProvider>
-      </AppSettingsProvider>
-    </BrowserRouter>
+    <App />
   </StrictMode>,
 );

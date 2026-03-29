@@ -1,90 +1,72 @@
-import { Routes, Route } from "react-router-dom";
-import { lazy, Suspense } from "react";
-import MainLayout from "./components/layout/MainLayout";
-import AuthLayout from "./components/layout/AuthLayout";
-import ScrollToTop from "./components/ui/ScrollToTop";
-
-// Lazy-loaded pages
-const Home = lazy(() => import("./pages/Home"));
-const About = lazy(() => import("./pages/About"));
-const Contact = lazy(() => import("./pages/Contact"));
-const Faq = lazy(() => import("./pages/Faq"));
-const Privacy = lazy(() => import("./pages/Privacy"));
-const Offer = lazy(() => import("./pages/Offer"));
-const Shop = lazy(() => import("./pages/Shop"));
-const ProductSingle = lazy(() => import("./pages/ProductSingle"));
-const AllCategory = lazy(() => import("./pages/AllCategory"));
-const BrandList = lazy(() => import("./pages/BrandList"));
-const BrandSingle = lazy(() => import("./pages/BrandSingle"));
-const Wishlist = lazy(() => import("./pages/Wishlist"));
-const Compare = lazy(() => import("./pages/Compare"));
-const Checkout = lazy(() => import("./pages/Checkout"));
-const OrderList = lazy(() => import("./pages/OrderList"));
-const Invoice = lazy(() => import("./pages/Invoice"));
-const Profile = lazy(() => import("./pages/Profile"));
-const Wallet = lazy(() => import("./pages/Wallet"));
-const BlogGrid = lazy(() => import("./pages/BlogGrid"));
-const BlogDetails = lazy(() => import("./pages/BlogDetails"));
-const BlogAuthor = lazy(() => import("./pages/BlogAuthor"));
-const Login = lazy(() => import("./pages/Login"));
-const Register = lazy(() => import("./pages/Register"));
-const ResetPassword = lazy(() => import("./pages/ResetPassword"));
-const ChangePassword = lazy(() => import("./pages/ChangePassword"));
-const ComingSoon = lazy(() => import("./pages/ComingSoon"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-
-function Loading() {
-  return (
-    <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary)]"></div>
-    </div>
-  );
-}
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
+import Home from "./pages/Home";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ProductDetails from "./pages/ProductDetails";
+import UserProfile from "./pages/UserProfile";
+// Informational & utility pages
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import CookiePolicy from "./pages/CookiePolicy";
+import AboutUs from "./pages/AboutUs";
+import OurMission from "./pages/OurMission";
+import Blog from "./pages/Blog";
+import Careers from "./pages/Careers";
+import ContactUs from "./pages/ContactUs";
+import FAQ from "./pages/Faq";
+import ShippingPolicy from "./pages/ShippingPolicy";
+import TrackOrder from "./pages/TrackOrder";
+import GetApp from "./pages/GetApp";
+import FindParish from "./pages/FindParish";
+import GiftCards from "./pages/GiftCards";
+import Help from "./pages/Help";
+import Donations from "./pages/Donations";
+import SearchResults from "./pages/SearchResults";
+import Checkout from "./pages/Checkout";
+import OrderConfirmation from "./pages/OrderConfirmation";
 
 export default function App() {
   return (
-    <>
-      <ScrollToTop />
-      <Suspense fallback={<Loading />}>
-        <Routes>
-          {/* Auth pages (no header/footer) */}
-          <Route element={<AuthLayout />}>
+    <BrowserRouter>
+      <AuthProvider>
+        <CartProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/product/:id" element={<ProductDetails />} />
+            <Route path="/profile" element={<UserProfile />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/change-password" element={<ChangePassword />} />
-          </Route>
-
-          {/* Full-chrome pages */}
-          <Route element={<MainLayout />}>
-            <Route index element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/faq" element={<Faq />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/offer" element={<Offer />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/product/:id" element={<ProductSingle />} />
-            <Route path="/categories" element={<AllCategory />} />
-            <Route path="/brands" element={<BrandList />} />
-            <Route path="/brand/:id" element={<BrandSingle />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="/compare" element={<Compare />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            {/* Legal */}
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/cookie-policy" element={<CookiePolicy />} />
+            {/* Company */}
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/mission" element={<OurMission />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/careers" element={<Careers />} />
+            {/* Customer care */}
+            <Route path="/contact" element={<ContactUs />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/shipping-policy" element={<ShippingPolicy />} />
+            <Route path="/track-order" element={<TrackOrder />} />
+            {/* Utility */}
+            <Route path="/get-app" element={<GetApp />} />
+            <Route path="/find-parish" element={<FindParish />} />
+            <Route path="/gift-cards" element={<GiftCards />} />
+            <Route path="/help" element={<Help />} />
+            <Route path="/donations" element={<Donations />} />
+            <Route path="/search" element={<SearchResults />} />
             <Route path="/checkout" element={<Checkout />} />
-            <Route path="/orders" element={<OrderList />} />
-            <Route path="/invoice" element={<Invoice />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/wallet" element={<Wallet />} />
-            <Route path="/blog" element={<BlogGrid />} />
-            <Route path="/blog/:slug" element={<BlogDetails />} />
-            <Route path="/blog/author/:id" element={<BlogAuthor />} />
-          </Route>
-
-          {/* Standalone pages */}
-          <Route path="/coming-soon" element={<ComingSoon />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
-    </>
+            <Route path="/order-confirmation" element={<OrderConfirmation />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </CartProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
