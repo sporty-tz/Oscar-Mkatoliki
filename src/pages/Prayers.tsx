@@ -13,18 +13,13 @@ interface Prayer {
   note?: string;
 }
 
-interface NovenaDay {
-  day: number;
-  prayer: string;
-}
-
 interface Novena {
   id: string;
   title: string;
   duration: number;
   anchor: { type: string; month: number; day: number; name: string };
   offsetDays: number;
-  days: NovenaDay[];
+  days: string[];
 }
 
 function getActiveNovenas(): { novena: Novena; currentDay: number }[] {
@@ -257,7 +252,7 @@ export default function Prayers() {
                         whiteSpace: "pre-line",
                       }}
                     >
-                      {novena.days[currentDay - 1]?.prayer ?? ""}
+                      {novena.days[currentDay - 1] ?? ""}
                     </p>
                   )}
                 </div>
