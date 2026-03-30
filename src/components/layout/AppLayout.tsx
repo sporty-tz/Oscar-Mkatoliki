@@ -1814,7 +1814,13 @@ const GLOBAL_CSS = `
 `;
 
 // ─── App Layout ───────────────────────────────────────────────────────────────
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default function AppLayout({
+  children,
+  hideCategoryNav,
+}: {
+  children: React.ReactNode;
+  hideCategoryNav?: boolean;
+}) {
   const { cartItems, removeFromCart, cartOpen, setCartOpen } = useCart();
   const navigate = useNavigate();
 
@@ -1834,7 +1840,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         cartCount={cartItems.length}
         onCartClick={() => setCartOpen(true)}
       />
-      <CategoryNav />
+      {!hideCategoryNav && <CategoryNav />}
 
       <main>{children}</main>
 

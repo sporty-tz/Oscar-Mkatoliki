@@ -1,0 +1,202 @@
+[
+    {
+        "id": "divine-mercy",
+        "title": "Divine Mercy Novena",
+        "subtitle": "Given by Jesus to St. Faustina",
+        "description": "Jesus asked St. Faustina Kowalska to begin this novena on Good Friday. Each day focuses on a different group of souls to bring before the Throne of Mercy.",
+        "duration": 9,
+        "anchor": {
+            "type": "feast",
+            "month": 4,
+            "day": 19,
+            "name": "Divine Mercy Sunday"
+        },
+        "offsetDays": -9,
+        "days": [
+            "Today bring to Me ALL MANKIND, especially all sinners, and immerse them in the ocean of My mercy.",
+            "Today bring to Me THE SOULS OF PRIESTS AND RELIGIOUS, and immerse them in My unfathomable mercy.",
+            "Today bring to Me ALL DEVOUT AND FAITHFUL SOULS, and immerse them in the ocean of My mercy.",
+            "Today bring to Me THOSE WHO DO NOT BELIEVE IN GOD AND THOSE WHO DO NOT KNOW ME.",
+            "Today bring to Me THE SOULS OF THOSE WHO HAVE SEPARATED THEMSELVES FROM MY CHURCH.",
+            "Today bring to Me THE MEEK AND HUMBLE SOULS AND THE SOULS OF LITTLE CHILDREN.",
+            "Today bring to Me THE SOULS WHO ESPECIALLY VENERATE AND GLORIFY MY MERCY.",
+            "Today bring to Me THE SOULS WHO ARE DETAINED IN PURGATORY.",
+            "Today bring to Me SOULS WHO HAVE BECOME LUKEWARM."
+        ]
+    },
+    {
+        "id": "st-joseph-march",
+        "title": "Novena to St. Joseph",
+        "subtitle": "Patron of the Universal Church",
+        "description": "A powerful nine-day prayer to St. Joseph leading up to his Solemnity on March 19. Pray for the needs of your family, workers, and the dying.",
+        "duration": 9,
+        "anchor": {
+            "type": "feast",
+            "month": 3,
+            "day": 19,
+            "name": "Solemnity of St. Joseph"
+        },
+        "offsetDays": -9,
+        "days": [
+            "St. Joseph, faithful guardian of the Holy Family, pray for us. We entrust our families to your care today.",
+            "St. Joseph, carpenter and labourer, sanctify all honest work. Pray for those who labour with their hands.",
+            "St. Joseph, model of silence and contemplation, teach us interior peace in the midst of daily duties.",
+            "St. Joseph, protector against doubts and temptations, strengthen our faith and guard our purity.",
+            "St. Joseph, patron of the dying, be with us in our final hour as you were with Jesus and Mary.",
+            "St. Joseph, model of obedience to God's will, help us to accept suffering with patience and hope.",
+            "St. Joseph, patron of the Universal Church, intercede for all priests, religious, and the Holy Father.",
+            "St. Joseph, just man and faithful steward, teach us to serve God faithfully in our vocation.",
+            "St. Joseph, terror of demons, protect our homes and families from all spiritual harm. Amen."
+        ]
+    },
+    {
+        "id": "holy-spirit-pentecost",
+        "title": "Novena to the Holy Spirit",
+        "subtitle": "The Original Novena",
+        "description": "The very first novena in Christian history: the nine days between Ascension and Pentecost, when the Apostles and Mary prayed together in the Upper Room awaiting the coming of the Holy Spirit.",
+        "duration": 9,
+        "anchor": {
+            "type": "feast",
+            "month": 6,
+            "day": 8,
+            "name": "Pentecost Sunday"
+        },
+        "offsetDays": -9,
+        "days": [
+            "Come, Holy Spirit, fill the hearts of your faithful with the gift of Wisdom — to see all things in the light of eternity.",
+            "Come, Holy Spirit, and grant us Understanding — to penetrate the truths of our faith more deeply.",
+            "Come, Holy Spirit, and grant us Counsel — to judge rightly in all situations and discern God's will.",
+            "Come, Holy Spirit, and grant us Fortitude — to endure trials and to stand firm for the Gospel.",
+            "Come, Holy Spirit, and grant us Knowledge — to know God's ways and to avoid the snares of sin.",
+            "Come, Holy Spirit, and grant us Piety — a profound reverence for God and holy affection for all that belongs to him.",
+            "Come, Holy Spirit, and grant us Fear of the Lord — a holy awe in God's presence that turns us from sin.",
+            "Come, Holy Spirit, renew the face of the earth. Send forth your Spirit and we shall be created anew.",
+            "Come, Holy Spirit, Come! Fill my heart with your fire. Let me burn for God alone. Amen."
+        ]
+    },
+    {
+        "id": "our-lady-fatima",
+        "title": "Novena to Our Lady of Fatima",
+        "subtitle": "Queen of the Rosary",
+        "description": "Pray this novena in preparation for the feast of Our Lady of Fatima on May 13. Ask her intercession for peace in the world and the conversion of sinners.",
+        "duration": 9,
+        "anchor": {
+            "type": "feast",
+            "month": 5,
+            "day": 13,
+            "name": "Our Lady of Fatima"
+        },
+        "offsetDays": -9,
+        "days": [
+            "Immaculate Heart of Mary, intercede for peace in our families and in our world.",
+            "Our Lady of Fatima, you asked for the Rosary each day. Help us to be faithful to this prayer.",
+            "Mary, you promised to help those who consecrate themselves to your Immaculate Heart. We renew our consecration today.",
+            "Our Lady, you showed the children a vision of hell. Move our hearts to pray for sinners.",
+            "Mary, you asked for the First Saturday devotions. Help us to make reparation for sins against your Immaculate Heart.",
+            "Our Lady of Fatima, you asked for the consecration of Russia. We pray for the conversion of all nations.",
+            "Mary, messenger of mercy, bring all souls who are far from God back to his loving embrace.",
+            "Immaculate Heart of Mary, triumph in our hearts, our homes and our nation.",
+            "Our Lady of Fatima, pray for us as we pray the Rosary for peace. In the end, your Immaculate Heart will triumph. Amen."
+        ]
+    },
+    {
+        "id": "st-therese",
+        "title": "Novena to St. Thérèse of Lisieux",
+        "subtitle": "The Little Flower",
+        "description": "Pray to St. Thérèse in confidence that she will 'let fall a shower of roses' from heaven. Her little way of spiritual childhood opens the path of holiness to everyone.",
+        "duration": 9,
+        "anchor": {
+            "type": "feast",
+            "month": 10,
+            "day": 1,
+            "name": "St. Thérèse of Lisieux"
+        },
+        "offsetDays": -9,
+        "days": [
+            "St. Thérèse, teach me the little way — to do small things with great love.",
+            "Little Flower, pray that I may have the complete abandonment to God's will that you showed.",
+            "St. Thérèse, you said you would spend your heaven doing good on earth. Send me a rose of grace today.",
+            "Little Flower, intercede for all souls who are suffering with serious illness, as you suffered from tuberculosis.",
+            "St. Thérèse, you were a great missionary from your cloister. Pray for all missionaries in the field today.",
+            "Little Flower, help me to accept humiliations with love, as you did throughout your life in Carmel.",
+            "St. Thérèse, patron of all those who love God with a childlike trust, deepen my confidence in the Father.",
+            "Little Flower, pray for priests — as you promised to pray for them from heaven — that they be holy and zealous.",
+            "St. Thérèse, my little sister in Carmel, walk beside me on my Christian journey. Amen."
+        ]
+    },
+    {
+        "id": "st-jude",
+        "title": "Novena to St. Jude",
+        "subtitle": "Patron of Impossible Causes",
+        "description": "A beloved novena for situations that seem beyond all human hope. St. Jude, the Apostle of desperate cases, stands before the throne of God to intercede for us.",
+        "duration": 9,
+        "anchor": {
+            "type": "feast",
+            "month": 10,
+            "day": 28,
+            "name": "Ss. Simon and Jude"
+        },
+        "offsetDays": -9,
+        "days": [
+            "St. Jude, Apostle and martyr, I come to you in my need. Nothing is impossible with God.",
+            "St. Jude, glorious Apostle, faithful servant and friend of Jesus, I place my desperate need before you.",
+            "St. Jude, patron of the impossible, intercede that I may receive the grace I so urgently need.",
+            "Holy St. Jude, worker of miracles, be not deaf to my pleading but gracious and merciful.",
+            "St. Jude, helper of the hopeless, pray that God's will be done — and that his will be my healing.",
+            "Holy St. Jude, grant me patience and trust in God's timing as I wait on his answer.",
+            "St. Jude, I promise to make it known that it is through your intercession that I have been helped.",
+            "Holy St. Jude, pray that I may accept with Christian joy whatever God shall will for me.",
+            "Glorious St. Jude, thank you for your intercession. I will keep my promise. Amen. Say three Our Fathers, three Hail Marys, and three Glory Bes."
+        ]
+    },
+    {
+        "id": "immaculate-conception",
+        "title": "Novena to the Immaculate Conception",
+        "subtitle": "Preparing for December 8",
+        "description": "A nine-day novena leading to the Solemnity of the Immaculate Conception, patronal feast of the United States and many Latin American countries.",
+        "duration": 9,
+        "anchor": {
+            "type": "feast",
+            "month": 12,
+            "day": 8,
+            "name": "Immaculate Conception"
+        },
+        "offsetDays": -9,
+        "days": [
+            "O Mary, conceived without sin, you were preserved from all stain of original sin. Pray for us who have recourse to you.",
+            "Immaculate Mary, your soul was the purest vessel for the Word of God. Purify our minds and hearts.",
+            "O Immaculate One, you crushed the head of the serpent. Help us overcome our habitual sins today.",
+            "Mary, full of grace, share your fullness with us. We are empty; fill us with God's life.",
+            "Immaculate Heart of Mary, you were the first to believe fully in your Son. Deepen our faith.",
+            "O Immaculate Virgin, you are the model of the Church. Help the Church to be holy as you are holy.",
+            "Mary, Queen conceived without original sin, intercede for our nation and all nations.",
+            "O Immaculate Mary, in whom God showed us what redeemed humanity looks like, draw us to your Son.",
+            "Immaculate Virgin, on this eve of your feast, present our petitions to your Son. Amen."
+        ]
+    },
+    {
+        "id": "sacred-heart",
+        "title": "Novena to the Sacred Heart of Jesus",
+        "subtitle": "Nine Fridays Devotion",
+        "description": "Jesus promised St. Margaret Mary Alacoque twelve promises to those who practise the devotion to his Sacred Heart, including the grace of final perseverance for those who receive Communion on nine consecutive First Fridays.",
+        "duration": 9,
+        "anchor": {
+            "type": "feast",
+            "month": 6,
+            "day": 27,
+            "name": "Sacred Heart of Jesus"
+        },
+        "offsetDays": -9,
+        "days": [
+            "O Sacred Heart of Jesus, I give myself entirely to you. Make me burn with love as you burn with love.",
+            "Sacred Heart, Jesus meek and humble, grant that my heart may become more like unto thine.",
+            "O Sacred Heart of Jesus, I trust in you completely. In my weakness, be my strength.",
+            "Sacred Heart of Jesus, atonement. I make reparation for all the times I have pushed you aside.",
+            "O Sacred Heart, pierced by a lance, have mercy on all who are dying today without the sacraments.",
+            "Sacred Heart of Jesus, refuge of sinners, receive all who are far from you and draw them home.",
+            "O Sacred Heart, from which flows the grace of the sacraments, be the strength of all priests.",
+            "Sacred Heart of Jesus, you are patient and full of mercy. Teach me to bear wrongs patiently.",
+            "O Sacred Heart of Jesus, I consecrate myself completely to you. Thy kingdom come. Amen."
+        ]
+    }
+]

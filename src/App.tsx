@@ -1,7 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
+import LandingPage from "./pages/LandingPage";
 import Home from "./pages/Home";
+import Bible from "./pages/Bible";
+import DailySaints from "./pages/DailySaints";
+import Prayers from "./pages/Prayers";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
@@ -34,7 +38,11 @@ export default function App() {
       <AuthProvider>
         <CartProvider>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/shop" element={<Home />} />
+            <Route path="/bible" element={<Bible />} />
+            <Route path="/daily-saints" element={<DailySaints />} />
+            <Route path="/prayers" element={<Prayers />} />
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/login" element={<Login />} />

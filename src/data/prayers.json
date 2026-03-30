@@ -1,0 +1,150 @@
+[
+    {
+        "id": "our-father",
+        "category": "Daily Prayers",
+        "title": "Our Father (Pater Noster)",
+        "latin": "Pater noster, qui es in caelis...",
+        "text": "Our Father, who art in heaven,\nhallowed be thy name;\nthy kingdom come,\nthy will be done\non earth as it is in heaven.\nGive us this day our daily bread,\nand forgive us our trespasses,\nas we forgive those who trespass against us;\nand lead us not into temptation,\nbut deliver us from evil.\nAmen.",
+        "source": "Matthew 6:9-13",
+        "note": "The Lord's Prayer — given by Jesus himself to his disciples."
+    },
+    {
+        "id": "hail-mary",
+        "category": "Marian Prayers",
+        "title": "Hail Mary (Ave Maria)",
+        "latin": "Ave Maria, gratia plena...",
+        "text": "Hail Mary, full of grace,\nthe Lord is with thee;\nblessed art thou among women,\nand blessed is the fruit of thy womb, Jesus.\nHoly Mary, Mother of God,\npray for us sinners,\nnow and at the hour of our death.\nAmen.",
+        "source": "Luke 1:28, 42",
+        "note": "The most beloved Marian prayer in the Church."
+    },
+    {
+        "id": "glory-be",
+        "category": "Daily Prayers",
+        "title": "Glory Be (Gloria Patri)",
+        "latin": "Gloria Patri, et Filio...",
+        "text": "Glory be to the Father,\nand to the Son,\nand to the Holy Spirit.\nAs it was in the beginning,\nis now, and ever shall be,\nworld without end.\nAmen.",
+        "source": "Doxology — Ancient",
+        "note": "The trinitarian doxology prayed at the end of every decade of the Rosary."
+    },
+    {
+        "id": "apostles-creed",
+        "category": "Daily Prayers",
+        "title": "The Apostles' Creed",
+        "text": "I believe in God,\nthe Father almighty,\nCreator of heaven and earth,\nand in Jesus Christ, his only Son, our Lord,\nwho was conceived by the Holy Spirit,\nborn of the Virgin Mary,\nsuffered under Pontius Pilate,\nwas crucified, died and was buried;\nhe descended into hell;\non the third day he rose again from the dead;\nhe ascended into heaven,\nand is seated at the right hand of God the Father almighty;\nfrom there he will come to judge the living and the dead.\nI believe in the Holy Spirit,\nthe holy catholic Church,\nthe communion of saints,\nthe forgiveness of sins,\nthe resurrection of the body,\nand life everlasting.\nAmen.",
+        "source": "Ancient Baptismal Symbol",
+        "note": "Prayed at the beginning of the Rosary."
+    },
+    {
+        "id": "act-of-contrition",
+        "category": "Daily Prayers",
+        "title": "Act of Contrition",
+        "text": "O my God, I am heartily sorry\nfor having offended you,\nand I detest all my sins\nbecause of your just punishments,\nbut most of all because they offend you, my God,\nwho are all-good and deserving of all my love.\nI firmly resolve, with the help of your grace,\nto sin no more and to avoid the near occasions of sin.\nAmen.",
+        "source": "Traditional Catholic Prayer",
+        "note": "Recited before and after the Sacrament of Confession."
+    },
+    {
+        "id": "morning-offering",
+        "category": "Daily Prayers",
+        "title": "Morning Offering",
+        "text": "O Jesus, through the Immaculate Heart of Mary,\nI offer you my prayers, works, joys and sufferings of this day\nin union with the Holy Sacrifice of the Mass throughout the world.\nI offer them for all the intentions of your Sacred Heart:\nthe salvation of souls, reparation for sin,\nand the reunion of all Christians.\nI offer them for the intentions of our bishops\nand of all Apostles of Prayer,\nand in particular for those recommended by our Holy Father this month.\nAmen.",
+        "source": "Apostleship of Prayer",
+        "note": "Consecrates the entire day to God. Ideal to pray upon waking."
+    },
+    {
+        "id": "angelus",
+        "category": "Daily Prayers",
+        "title": "The Angelus",
+        "text": "V. The Angel of the Lord declared unto Mary.\nR. And she conceived of the Holy Spirit.\n\nHail Mary...\n\nV. Behold the handmaid of the Lord.\nR. Be it done unto me according to thy word.\n\nHail Mary...\n\nV. And the Word was made flesh.\nR. And dwelt among us.\n\nHail Mary...\n\nV. Pray for us, O Holy Mother of God.\nR. That we may be made worthy of the promises of Christ.\n\nLet us pray:\nPour forth, we beseech thee, O Lord, thy grace into our hearts;\nthat we, to whom the incarnation of Christ thy Son was made known\nby the message of an angel, may by his Passion and Cross\nbe brought to the glory of his Resurrection,\nthrough the same Christ our Lord. Amen.",
+        "source": "Traditional — prayed at 6am, noon, and 6pm",
+        "note": "Traditionally rung three times daily with a church bell. During Easter, the Regina Caeli is prayed instead."
+    },
+    {
+        "id": "memorare",
+        "category": "Marian Prayers",
+        "title": "The Memorare",
+        "text": "Remember, O most gracious Virgin Mary,\nthat never was it known\nthat anyone who fled to thy protection,\nimplored thy help,\nor sought thine intercession\nwas left unaided.\nInspired by this confidence I fly unto thee,\nO Virgin of virgins, my mother;\nto thee do I come,\nbefore thee I stand,\nsinful and sorrowful.\nO Mother of the Word Incarnate,\ndespise not my petitions,\nbut in thy mercy hear and answer me.\nAmen.",
+        "source": "Attributed to St. Bernard of Clairvaux",
+        "note": "One of the most beloved prayers of urgent petition to Our Lady."
+    },
+    {
+        "id": "salve-regina",
+        "category": "Marian Prayers",
+        "title": "Salve Regina (Hail Holy Queen)",
+        "latin": "Salve, Regina, Mater misericordiae...",
+        "text": "Hail, Holy Queen, Mother of Mercy,\nhail, our life, our sweetness and our hope.\nTo thee do we cry, poor banished children of Eve;\nto thee do we send up our sighs,\nmourning and weeping in this valley of tears.\nTurn then, most gracious advocate,\nthine eyes of mercy towards us;\nand after this our exile,\nshow unto us the blessed fruit of thy womb, Jesus.\nO clement, O loving, O sweet Virgin Mary.\nV. Pray for us, O holy Mother of God.\nR. That we may be made worthy of the promises of Christ.",
+        "source": "Attributed to Hermann of Reichenau (ca. 1050)",
+        "note": "Prayed at the end of the Rosary and at Compline."
+    },
+    {
+        "id": "regina-caeli",
+        "category": "Marian Prayers",
+        "title": "Regina Caeli (Queen of Heaven)",
+        "text": "Queen of Heaven, rejoice, alleluia.\nFor he whom you did merit to bear, alleluia.\nHas risen as he said, alleluia.\nPray for us to God, alleluia.\nV. Rejoice and be glad, O Virgin Mary, alleluia.\nR. For the Lord has truly risen, alleluia.\n\nLet us pray: O God, who gave joy to the world\nthrough the resurrection of your Son, our Lord Jesus Christ,\ngrant we beseech you, that through the intercession\nof the Virgin Mary, his Mother,\nwe may obtain the joys of everlasting life.\nThrough the same Christ our Lord. Amen.",
+        "source": "Attributed to Pope Gregory V (ca. 10th century)",
+        "note": "Replaces the Angelus during the Easter Season (Easter Sunday to Pentecost)."
+    },
+    {
+        "id": "divine-mercy-chaplet",
+        "category": "Chaplets",
+        "title": "Chaplet of Divine Mercy",
+        "text": "Begin with:\nOur Father... Hail Mary... Apostles' Creed...\n\nOn each Our Father bead:\n'Eternal Father, I offer you the Body and Blood,\nSoul and Divinity of your dearly beloved Son,\nOur Lord, Jesus Christ,\nin atonement for our sins and those of the whole world.'\n\nOn each Hail Mary bead (ten per decade):\n'For the sake of his sorrowful Passion,\nhave mercy on us and on the whole world.'\n\nConclude (three times):\n'Holy God, Holy Mighty One,\nHoly Immortal One,\nhave mercy on us and on the whole world.'",
+        "source": "Given by Jesus to St. Faustina Kowalska (1935)",
+        "note": "Prayed at 3:00 pm — the Hour of Mercy. The most powerful prayer of intercession in the Faustina devotion."
+    },
+    {
+        "id": "st-michael-prayer",
+        "category": "Chaplets",
+        "title": "Prayer to St. Michael the Archangel",
+        "text": "Saint Michael the Archangel,\ndefend us in battle;\nbe our protection against the wickedness\nand snares of the devil.\nMay God rebuke him, we humbly pray,\nand do thou, O prince of the heavenly host,\nby the power of God,\nthrust into hell Satan and all the evil spirits\nwho prowl about the world seeking the ruin of souls.\nAmen.",
+        "source": "Composed by Pope Leo XIII after a mystical vision (1884)",
+        "note": "Traditionally prayed at the end of Low Mass. Widely used as a prayer of protection."
+    },
+    {
+        "id": "stations-of-the-cross",
+        "category": "Special Occasions",
+        "title": "Stations of the Cross — Introduction",
+        "text": "We adore you, O Christ, and we bless you,\nbecause by your holy Cross you have redeemed the world.\n\nThe 14 Stations:\n1. Jesus is condemned to death\n2. Jesus carries his Cross\n3. Jesus falls for the first time\n4. Jesus meets his Mother\n5. Simon of Cyrene helps Jesus carry the Cross\n6. Veronica wipes the face of Jesus\n7. Jesus falls for the second time\n8. Jesus meets the women of Jerusalem\n9. Jesus falls for the third time\n10. Jesus is stripped of his garments\n11. Jesus is nailed to the Cross\n12. Jesus dies on the Cross\n13. Jesus is taken down from the Cross\n14. Jesus is laid in the tomb\n\nAt each station:\nWe adore you, O Christ, and we bless you,\nbecause by your holy Cross you have redeemed the world.",
+        "source": "Franciscan devotion — traditional since the 14th century",
+        "note": "A pilgrimage in spirit to Calvary. Traditionally prayed on Fridays, especially during Lent."
+    },
+    {
+        "id": "grace-before-meals",
+        "category": "Daily Prayers",
+        "title": "Grace Before Meals",
+        "text": "Bless us, O Lord, and these thy gifts,\nwhich we are about to receive\nfrom thy bounty,\nthrough Christ our Lord.\nAmen.",
+        "source": "Traditional",
+        "note": "The most commonly used blessing before eating."
+    },
+    {
+        "id": "grace-after-meals",
+        "category": "Daily Prayers",
+        "title": "Grace After Meals",
+        "text": "We give thee thanks, Almighty God,\nfor all thy benefits,\nwho livest and reignest\nworld without end.\nAnd may the souls of the faithful departed,\nthrough the mercy of God, rest in peace.\nAmen.",
+        "source": "Traditional",
+        "note": "Gives thanks to God after eating."
+    },
+    {
+        "id": "spiritual-communion",
+        "category": "Special Occasions",
+        "title": "Act of Spiritual Communion",
+        "text": "My Jesus, I believe that you are present\nin the Most Holy Sacrament.\nI love you above all things,\nand I desire to receive you into my soul.\nSince I cannot at this moment receive you sacramentally,\ncome at least spiritually into my heart.\nI embrace you as if you were already there\nand unite myself wholly to you.\nNever permit me to be separated from you.\nAmen.",
+        "source": "Attributed to St. Alphonsus Liguori",
+        "note": "Used when one cannot receive Communion. Pope Francis encourages this prayer often."
+    },
+    {
+        "id": "prayer-for-dead",
+        "category": "Special Occasions",
+        "title": "Eternal Rest (De Profundis)",
+        "text": "Eternal rest grant unto them, O Lord,\nand let perpetual light shine upon them.\nMay the souls of all the faithful departed,\nthrough the mercy of God,\nrest in peace.\nAmen.",
+        "source": "Traditional",
+        "note": "Prayed for the holy souls in purgatory, especially on All Souls' Day."
+    },
+    {
+        "id": "anima-christi",
+        "category": "Special Occasions",
+        "title": "Anima Christi (Soul of Christ)",
+        "text": "Soul of Christ, sanctify me.\nBody of Christ, save me.\nBlood of Christ, inebriate me.\nWater from the side of Christ, wash me.\nPassion of Christ, strengthen me.\nO Good Jesus, hear me.\nWithin thy wounds, hide me.\nSuffer me not to be separated from thee.\nFrom the malicious enemy, defend me.\nIn the hour of my death, call me.\nAnd bid me come to thee,\nthat with thy saints I may praise thee\nfor ever and ever. Amen.",
+        "source": "14th century — attributed to Pope John XXII",
+        "note": "Traditionally prayed after receiving Holy Communion."
+    }
+]
