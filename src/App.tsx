@@ -28,6 +28,7 @@ import FindParish from "./pages/FindParish";
 import GiftCards from "./pages/GiftCards";
 import Help from "./pages/Help";
 import Donations from "./pages/Donations";
+import Sacramentals from "./pages/Sacramentals";
 import SearchResults from "./pages/SearchResults";
 import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
@@ -68,6 +69,7 @@ export default function App() {
             <Route path="/gift-cards" element={<GiftCards />} />
             <Route path="/help" element={<Help />} />
             <Route path="/donations" element={<Donations />} />
+            <Route path="/sacramentals" element={<Sacramentals />} />
             <Route path="/search" element={<SearchResults />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/order-confirmation" element={<OrderConfirmation />} />
