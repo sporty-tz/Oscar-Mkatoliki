@@ -395,6 +395,7 @@ function LandingHero() {
         >
           {/* Decorative gold ring behind statue */}
           <div
+            className="lhero-statue-rings"
             style={{
               position: "absolute",
               bottom: "12%",
@@ -408,6 +409,7 @@ function LandingHero() {
             }}
           />
           <div
+            className="lhero-statue-rings"
             style={{
               position: "absolute",
               bottom: "8%",
@@ -441,6 +443,7 @@ function LandingHero() {
 
           {/* Floating translation badge */}
           <div
+            className="lhero-badge"
             style={{
               position: "absolute",
               bottom: 22,
@@ -892,6 +895,32 @@ function FaithPillars() {
       <style>{`
         @media (max-width: 768px) {
           .pillars-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+        }
+        @media (max-width: 768px) {
+          .landing-hero-inner {
+            grid-template-columns: 1fr !important;
+            padding: 72px 24px 80px !important;
+          }
+          .lhero-statue {
+            position: absolute !important;
+            inset: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            opacity: 0.18 !important;
+            pointer-events: none !important;
+            justify-content: flex-end !important;
+            align-items: stretch !important;
+          }
+          .lhero-statue img {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 100% !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            object-position: center top !important;
+          }
+          .lhero-statue-rings,
+          .lhero-badge { display: none !important; }
         }
         @media (max-width: 640px) {
           .lhero-h1 { font-size: 28px !important; }
