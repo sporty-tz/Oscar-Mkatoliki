@@ -43,6 +43,7 @@ export default function Bible() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("OT_PROTO");
   const [bookSearch, setBookSearch] = useState("");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const readerRef = useRef<HTMLDivElement>(null);
 
   const liturgical = useLiturgicalDay();
@@ -258,8 +259,7 @@ export default function Bible() {
           style={{
             maxWidth: 1280,
             margin: "0 auto",
-            display: "grid",
-            gridTemplateColumns: "300px 1fr",
+            display: "flex",
             minHeight: 600,
           }}
         >
@@ -270,172 +270,240 @@ export default function Bible() {
               background: "#fff",
               display: "flex",
               flexDirection: "column",
+              width: sidebarCollapsed ? 48 : 300,
+              minWidth: sidebarCollapsed ? 48 : 300,
+              transition: "width 0.25s ease, min-width 0.25s ease",
+              overflow: "hidden",
+              flexShrink: 0,
+              position: "relative",
             }}
           >
-            {/* Search */}
-            <div style={{ padding: "16px 16px 0" }}>
-              <div
+            {/* Collapse toggle */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: sidebarCollapsed ? "center" : "flex-end",
+                padding: "10px 10px 0",
+                flexShrink: 0,
+              }}
+            >
+              <button
+                onClick={() => setSidebarCollapsed((v) => !v)}
+                title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
                 style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 7,
+                  border: "1.5px solid #e8e2d8",
+                  background: "#f5f2eb",
+                  color: "#555",
+                  cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
-                  gap: 8,
-                  background: "#f5f2eb",
-                  border: "1.5px solid #e8e2d8",
-                  borderRadius: 10,
-                  padding: "8px 12px",
+                  justifyContent: "center",
+                  fontSize: 16,
+                  fontWeight: 700,
+                  flexShrink: 0,
+                  transition: "background 0.15s",
+                  lineHeight: 1,
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = "#ece7dc")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "#f5f2eb")
+                }
+              >
+                {sidebarCollapsed ? "›" : "‹"}
+              </button>
+            </div>
+
+            {/* Sidebar content — hidden when collapsed */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                flex: 1,
+                opacity: sidebarCollapsed ? 0 : 1,
+                pointerEvents: sidebarCollapsed ? "none" : "auto",
+                transition: "opacity 0.15s ease",
+                overflow: "hidden",
+              }}
+            >
+              {/* Search */}
+              <div style={{ padding: "16px 16px 0" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    background: "#f5f2eb",
+                    border: "1.5px solid #e8e2d8",
+                    borderRadius: 10,
+                    padding: "8px 12px",
+                  }}
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#aaa"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Search books…"
+                    value={bookSearch}
+                    onChange={(e) => setBookSearch(e.target.value)}
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      outline: "none",
+                      fontSize: 13.5,
+                      color: "#1a1a2e",
+                      flex: 1,
+                    }}
+                  />
+                  {bookSearch && (
+                    <button
+                      onClick={() => setBookSearch("")}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        color: "#aaa",
+                        padding: 0,
+                        fontSize: 16,
+                        lineHeight: 1,
+                      }}
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Section tabs */}
+              {!filteredBooks && (
+                <div
+                  style={{ display: "flex", padding: "12px 16px 0", gap: 6 }}
+                >
+                  {SECTION_ORDER.map((sec) => (
+                    <button
+                      key={sec.key}
+                      onClick={() => setActiveSection(sec.key)}
+                      style={{
+                        flex: 1,
+                        padding: "6px 4px",
+                        borderRadius: 8,
+                        border: "1.5px solid",
+                        borderColor:
+                          activeSection === sec.key ? "#1e3799" : "#e8e2d8",
+                        background:
+                          activeSection === sec.key ? "#1e3799" : "transparent",
+                        color: activeSection === sec.key ? "#fff" : "#888",
+                        fontWeight: 700,
+                        fontSize: 10.5,
+                        cursor: "pointer",
+                        transition: "all 0.18s",
+                      }}
+                    >
+                      {sec.key === "OT_PROTO"
+                        ? "OT"
+                        : sec.key === "OT_DEUTERO"
+                          ? "Deut."
+                          : "NT"}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Book list */}
+              <div
+                style={{
+                  flex: 1,
+                  overflowY: "auto",
+                  padding: "10px 10px 20px",
+                  minWidth: 280,
                 }}
               >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#aaa"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="11" cy="11" r="8" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Search books…"
-                  value={bookSearch}
-                  onChange={(e) => setBookSearch(e.target.value)}
-                  style={{
-                    border: "none",
-                    background: "transparent",
-                    outline: "none",
-                    fontSize: 13.5,
-                    color: "#1a1a2e",
-                    flex: 1,
-                  }}
-                />
-                {bookSearch && (
-                  <button
-                    onClick={() => setBookSearch("")}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      color: "#aaa",
-                      padding: 0,
-                      fontSize: 16,
-                      lineHeight: 1,
-                    }}
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Section tabs */}
-            {!filteredBooks && (
-              <div style={{ display: "flex", padding: "12px 16px 0", gap: 6 }}>
-                {SECTION_ORDER.map((sec) => (
-                  <button
-                    key={sec.key}
-                    onClick={() => setActiveSection(sec.key)}
-                    style={{
-                      flex: 1,
-                      padding: "6px 4px",
-                      borderRadius: 8,
-                      border: "1.5px solid",
-                      borderColor:
-                        activeSection === sec.key ? "#1e3799" : "#e8e2d8",
-                      background:
-                        activeSection === sec.key ? "#1e3799" : "transparent",
-                      color: activeSection === sec.key ? "#fff" : "#888",
-                      fontWeight: 700,
-                      fontSize: 10.5,
-                      cursor: "pointer",
-                      transition: "all 0.18s",
-                    }}
-                  >
-                    {sec.key === "OT_PROTO"
-                      ? "OT"
-                      : sec.key === "OT_DEUTERO"
-                        ? "Deut."
-                        : "NT"}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Book list */}
-            <div
-              style={{ flex: 1, overflowY: "auto", padding: "10px 10px 20px" }}
-            >
-              {(filteredBooks
-                ? [{ key: "search", label: "Results", filter: () => true }]
-                : SECTION_ORDER.filter((s) => s.key === activeSection)
-              ).map((sec) => {
-                const books = filteredBooks ?? BOOKS.filter(sec.filter);
-                return (
-                  <div key={sec.key}>
-                    {books.map((book) => (
-                      <button
-                        key={book.name}
-                        onClick={() => selectBook(book)}
-                        style={{
-                          width: "100%",
-                          textAlign: "left",
-                          background:
-                            selectedBook?.name === book.name
-                              ? "#eef2ff"
-                              : "transparent",
-                          border: "none",
-                          borderRadius: 9,
-                          padding: "9px 12px",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          transition: "background 0.15s",
-                        }}
-                        onMouseEnter={(e) => {
-                          if (selectedBook?.name !== book.name)
-                            (
-                              e.currentTarget as HTMLButtonElement
-                            ).style.background = "#f5f2eb";
-                        }}
-                        onMouseLeave={(e) => {
-                          if (selectedBook?.name !== book.name)
-                            (
-                              e.currentTarget as HTMLButtonElement
-                            ).style.background = "transparent";
-                        }}
-                      >
-                        <span
+                {(filteredBooks
+                  ? [{ key: "search", label: "Results", filter: () => true }]
+                  : SECTION_ORDER.filter((s) => s.key === activeSection)
+                ).map((sec) => {
+                  const books = filteredBooks ?? BOOKS.filter(sec.filter);
+                  return (
+                    <div key={sec.key}>
+                      {books.map((book) => (
+                        <button
+                          key={book.name}
+                          onClick={() => selectBook(book)}
                           style={{
-                            fontSize: 13.5,
-                            fontWeight:
-                              selectedBook?.name === book.name ? 800 : 500,
-                            color:
+                            width: "100%",
+                            textAlign: "left",
+                            background:
                               selectedBook?.name === book.name
-                                ? "#1e3799"
-                                : "#1a1a2e",
+                                ? "#eef2ff"
+                                : "transparent",
+                            border: "none",
+                            borderRadius: 9,
+                            padding: "9px 12px",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            transition: "background 0.15s",
+                          }}
+                          onMouseEnter={(e) => {
+                            if (selectedBook?.name !== book.name)
+                              (
+                                e.currentTarget as HTMLButtonElement
+                              ).style.background = "#f5f2eb";
+                          }}
+                          onMouseLeave={(e) => {
+                            if (selectedBook?.name !== book.name)
+                              (
+                                e.currentTarget as HTMLButtonElement
+                              ).style.background = "transparent";
                           }}
                         >
-                          {book.name}
-                        </span>
-                        <span
-                          style={{
-                            fontSize: 10.5,
-                            color: "#bbb",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {book.chapters} ch
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                );
-              })}
+                          <span
+                            style={{
+                              fontSize: 13.5,
+                              fontWeight:
+                                selectedBook?.name === book.name ? 800 : 500,
+                              color:
+                                selectedBook?.name === book.name
+                                  ? "#1e3799"
+                                  : "#1a1a2e",
+                            }}
+                          >
+                            {book.name}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: 10.5,
+                              color: "#bbb",
+                              fontWeight: 600,
+                            }}
+                          >
+                            {book.chapters} ch
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
+            {/* end sidebar content */}
           </div>
 
           {/* ── Right: Reader ── */}
@@ -623,10 +691,7 @@ export default function Bible() {
                 <div
                   ref={readerRef}
                   style={{
-                    flex: 1,
-                    overflowY: "auto",
                     padding: "28px 32px 60px",
-                    maxHeight: "calc(100vh - 340px)",
                   }}
                 >
                   {chapter.loading && (
