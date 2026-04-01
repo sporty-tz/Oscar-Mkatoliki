@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
 import { type Product, FEATURED_PRODUCTS } from "../lib/products";
@@ -85,19 +85,17 @@ function SacramentalProductCard({
   onAddToCart: (p: Product) => void;
 }) {
   const navigate = useNavigate();
-  const { items, updateQty } = useCart();
-  const cartItem = items.find((i) => i.id === product.id);
-  const qty = cartItem?.quantity ?? 0;
+  const { cartItems, addToCart, removeFromCart } = useCart();
+  const qty = cartItems.filter((i) => i.id === product.id).length;
 
   function handleAdd() {
     onAddToCart(product);
   }
   function handleIncrease() {
-    updateQty(product.id, qty + 1);
+    addToCart(product);
   }
   function handleDecrease() {
-    if (qty > 1) updateQty(product.id, qty - 1);
-    else updateQty(product.id, 0);
+    removeFromCart(product.id);
   }
 
   return (
@@ -336,7 +334,7 @@ function SacramentalProductCard({
 
 // ── Page ───────────────────────────────────────────────────────────────────────
 export default function Sacramentals() {
-  const { addItem } = useCart();
+  const { addToCart } = useCart();
   const [activeCategory, setActiveCategory] = useState<string>("all");
 
   const filteredProducts =
@@ -347,13 +345,7 @@ export default function Sacramentals() {
         );
 
   function handleAddToCart(product: Product) {
-    addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      quantity: 1,
-    });
+    addToCart(product);
   }
 
   return (
