@@ -1,3 +1,4 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
 import { useLiturgicalDay } from "../hooks/useLiturgicalDay";
@@ -729,7 +730,7 @@ function MinistryCards() {
 }
 
 // ─── Faith Pillars Strip ───────────────────────────────────────────────────────
-const PILLAR_ICONS: Record<string, JSX.Element> = {
+const PILLAR_ICONS: Record<string, React.ReactElement> = {
   tradition: (
     <svg
       width="22"
