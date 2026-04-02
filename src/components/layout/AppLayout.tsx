@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { type Product, FEATURED_PRODUCTS } from "../../lib/products";
+import { type Product } from "../../lib/products";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
+import { useFeaturedProducts } from "../../lib/hooks";
 
 // ─── Announcement Bar ─────────────────────────────────────────────────────────
 function AnnouncementBar() {
@@ -205,6 +206,7 @@ function Header({
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { products } = useFeaturedProducts();
 
   useEffect(() => {
     function handleOutside(e: MouseEvent) {
@@ -245,11 +247,13 @@ function Header({
 
   const searchResults =
     query.trim().length > 0
-      ? FEATURED_PRODUCTS.filter(
-          (p) =>
-            p.name.toLowerCase().includes(query.toLowerCase()) ||
-            p.category.toLowerCase().includes(query.toLowerCase()),
-        ).slice(0, 6)
+      ? products
+          .filter(
+            (p) =>
+              p.name.toLowerCase().includes(query.toLowerCase()) ||
+              p.category.toLowerCase().includes(query.toLowerCase()),
+          )
+          .slice(0, 6)
       : [];
 
   const mainNav: NavEntry[] = [
@@ -1530,7 +1534,7 @@ function CartSidebar({
 }: {
   items: Product[];
   onClose: () => void;
-  onRemove: (id: number) => void;
+  onRemove: (id: string) => void;
   onCheckout: () => void;
 }) {
   const total = items.reduce((sum, p) => sum + p.price, 0);

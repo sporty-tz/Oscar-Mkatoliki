@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AppLayout from "../components/layout/AppLayout";
 import { useBlogPosts } from "../lib/hooks";
 
