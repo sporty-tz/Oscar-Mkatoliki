@@ -10,35 +10,40 @@ const SACRAMENTAL_CATEGORIES = [
   {
     id: "rosaries",
     name: "Rosaries",
-    image: "/Categories/Rosary-1.png",
+    image:
+      "https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Categories/Rosary-1.png",
     color: "#fce4ec",
     desc: "Pray the Holy Rosary with beautifully crafted beads",
   },
   {
     id: "statues",
     name: "Statues",
-    image: "/Categories/Statue-1.png",
+    image:
+      "https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Categories/Statue-1.png",
     color: "#d4edda",
     desc: "Holy images to sanctify your home and altar",
   },
   {
     id: "candles",
     name: "Candles",
-    image: "/Categories/Candle-1.png",
+    image:
+      "https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Categories/Candle-1.png",
     color: "#fff9c4",
     desc: "Sacred flames for prayer, vigils and devotion",
   },
   {
     id: "jewelry",
     name: "Jewelry & Medals",
-    image: "/Categories/Jewerly-1.png",
+    image:
+      "https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Categories/Jewerly-1.png",
     color: "#fff8e1",
     desc: "Wear your faith with blessed crosses and medals",
   },
   {
     id: "sacramentals",
     name: "Sacramentals",
-    image: "/Categories/Sacramentals-1.png",
+    image:
+      "https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Categories/Sacramentals-1.png",
     color: "#e3f2fd",
     desc: "Holy water, oils, scapulars and blessed objects",
   },

@@ -39,16 +39,16 @@ ON CONFLICT (key) DO NOTHING;
 -- ============================================================
 
 INSERT INTO categories (id, name, slug, image_url, is_active, sort_order) VALUES
-  ('c0000001-0000-0000-0000-000000000001', 'Music & Audio',    'music-audio',    '/Categories/Music-1.png',        true, 1),
-  ('c0000001-0000-0000-0000-000000000002', 'Books & Bibles',   'books-bibles',   '/Categories/Books-1.png',        true, 2),
-  ('c0000001-0000-0000-0000-000000000003', 'Rosaries',         'rosaries',       '/Categories/Rosary-1.png',       true, 3),
-  ('c0000001-0000-0000-0000-000000000004', 'Statues',          'statues',        '/Categories/Statue-1.png',       true, 4),
-  ('c0000001-0000-0000-0000-000000000005', 'Candles',          'candles',        '/Categories/Candle-1.png',       true, 5),
-  ('c0000001-0000-0000-0000-000000000006', 'Apparel',          'apparel',        '/Categories/Apparel-1.png',      true, 6),
-  ('c0000001-0000-0000-0000-000000000007', 'Gifts',            'gifts',          '/Categories/Gifts-1.png',        true, 7),
-  ('c0000001-0000-0000-0000-000000000008', 'Children''s',      'childrens',      '/Categories/Children-1.png',     true, 8),
-  ('c0000001-0000-0000-0000-000000000009', 'Jewelry',          'jewelry',        '/Categories/Jewerly-1.png',      true, 9),
-  ('c0000001-0000-0000-0000-000000000010', 'Sacramentals',     'sacramentals',   '/Categories/Sacramentals-1.png', true, 10)
+  ('c0000001-0000-0000-0000-000000000001', 'Music & Audio',    'music-audio',    'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Categories/Music-1.png',        true, 1),
+  ('c0000001-0000-0000-0000-000000000002', 'Books & Bibles',   'books-bibles',   'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Categories/Books-1.png',        true, 2),
+  ('c0000001-0000-0000-0000-000000000003', 'Rosaries',         'rosaries',       'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Categories/Rosary-1.png',       true, 3),
+  ('c0000001-0000-0000-0000-000000000004', 'Statues',          'statues',        'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Categories/Statue-1.png',       true, 4),
+  ('c0000001-0000-0000-0000-000000000005', 'Candles',          'candles',        'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Categories/Candle-1.png',       true, 5),
+  ('c0000001-0000-0000-0000-000000000006', 'Apparel',          'apparel',        'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Categories/Apparel-1.png',      true, 6),
+  ('c0000001-0000-0000-0000-000000000007', 'Gifts',            'gifts',          'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Categories/Gifts-1.png',        true, 7),
+  ('c0000001-0000-0000-0000-000000000008', 'Children''s',      'childrens',      'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Categories/Children-1.png',     true, 8),
+  ('c0000001-0000-0000-0000-000000000009', 'Jewelry',          'jewelry',        'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Categories/Jewerly-1.png',      true, 9),
+  ('c0000001-0000-0000-0000-000000000010', 'Sacramentals',     'sacramentals',   'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Categories/Sacramentals-1.png', true, 10)
 ON CONFLICT (id) DO NOTHING;
 
 
@@ -134,14 +134,14 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Product media (primary images)
 INSERT INTO product_media (product_id, url, alt_text, is_primary, sort_order) VALUES
-  ('e0000001-0000-0000-0000-000000000001', '/Products/Prod-1.png', 'Rosary of the Sacred Heart',  true, 1),
-  ('e0000001-0000-0000-0000-000000000002', '/Products/Prod-2.png', 'Oscar Mkatoliki Praise Vol 1', true, 1),
-  ('e0000001-0000-0000-0000-000000000003', '/Products/Prod-3.png', 'Catholic Study Bible',        true, 1),
-  ('e0000001-0000-0000-0000-000000000004', '/Products/Prod-4.png', 'Holy Family Statue',          true, 1),
-  ('e0000001-0000-0000-0000-000000000005', '/Products/Prod-5.png', 'Church Pillar Candle Set',    true, 1),
-  ('e0000001-0000-0000-0000-000000000006', '/Products/Prod-6.png', 'Children''s Bible Stories',   true, 1),
-  ('e0000001-0000-0000-0000-000000000007', '/Products/Prod-7.png', 'Blessed Cross Necklace',      true, 1),
-  ('e0000001-0000-0000-0000-000000000008', '/Products/prod-8.png', 'Devotional Prayer Journal',   true, 1)
+  ('e0000001-0000-0000-0000-000000000001', 'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Products/Prod-1.png', 'Rosary of the Sacred Heart',  true, 1),
+  ('e0000001-0000-0000-0000-000000000002', 'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Products/Prod-2.png', 'Oscar Mkatoliki Praise Vol 1', true, 1),
+  ('e0000001-0000-0000-0000-000000000003', 'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Products/Prod-3.png', 'Catholic Study Bible',        true, 1),
+  ('e0000001-0000-0000-0000-000000000004', 'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Products/Prod-4.png', 'Holy Family Statue',          true, 1),
+  ('e0000001-0000-0000-0000-000000000005', 'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Products/Prod-5.png', 'Church Pillar Candle Set',    true, 1),
+  ('e0000001-0000-0000-0000-000000000006', 'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Products/Prod-6.png', 'Children''s Bible Stories',   true, 1),
+  ('e0000001-0000-0000-0000-000000000007', 'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Products/Prod-7.png', 'Blessed Cross Necklace',      true, 1),
+  ('e0000001-0000-0000-0000-000000000008', 'https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Products/prod-8.png', 'Devotional Prayer Journal',   true, 1)
 ON CONFLICT DO NOTHING;
 
 -- Product inventory (initial stock)
@@ -167,7 +167,7 @@ INSERT INTO homepage_sections (section_key, data, is_active) VALUES
   '[
     {
       "id": 1,
-      "image": "/Slider/Pope-leo-xiv.png",
+      "image": "https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/slider/Pope-leo-xiv.png",
       "subheading": "Words of the Holy Father",
       "heading": "Walk in Hope",
       "quote": "\u201cWe are pilgrims on a journey of faith. Let us walk together in hope, in charity, and in the joy of the Gospel, building a world of fraternity and peace.\u201d",
@@ -178,7 +178,7 @@ INSERT INTO homepage_sections (section_key, data, is_active) VALUES
     },
     {
       "id": 2,
-      "image": "/Slider/Hail-Mary.png",
+      "image": "https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/slider/Hail-Mary.png",
       "subheading": "Ave Maria",
       "heading": "Full of Grace",
       "quote": "\u201cHail Mary, full of grace, the Lord is with thee. Blessed art thou among women, and blessed is the fruit of thy womb, Jesus.\u201d",
@@ -189,7 +189,7 @@ INSERT INTO homepage_sections (section_key, data, is_active) VALUES
     },
     {
       "id": 3,
-      "image": "/Slider/Christ-the-king.png",
+      "image": "https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/slider/Christ-the-king.png",
       "subheading": "Christ the King",
       "heading": "The Way & the Life",
       "quote": "\u201cI am the way, and the truth, and the life. No one comes to the Father except through me. Let your hearts not be troubled.\u201d",
