@@ -1,16 +1,17 @@
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { FEATURED_PRODUCTS } from "../lib/products";
 import AppLayout from "../components/layout/AppLayout";
 import { useCart } from "../context/CartContext";
+import { useFeaturedProducts } from "../lib/hooks";
 
 export default function SearchResults() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { products } = useFeaturedProducts();
   const q = searchParams.get("q") ?? "";
 
   const results = q.trim()
-    ? FEATURED_PRODUCTS.filter(
+    ? products.filter(
         (p) =>
           p.name.toLowerCase().includes(q.toLowerCase()) ||
           p.category.toLowerCase().includes(q.toLowerCase()),

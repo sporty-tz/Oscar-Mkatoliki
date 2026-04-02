@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { type Product, FEATURED_PRODUCTS } from "../lib/products";
+import { type Product } from "../lib/products";
 import AppLayout from "../components/layout/AppLayout";
 import { useCart } from "../context/CartContext";
+import { useFeaturedProducts } from "../lib/hooks";
 
 // ─── Mini Product Card (for the two bottom sections) ──────────────────────────
 function MiniCard({
@@ -287,11 +288,12 @@ export default function ProductDetails() {
   const { addToCart } = useCart();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { products } = useFeaturedProducts();
   const [qty, setQty] = useState(1);
   const [activeThumb, setActiveThumb] = useState(0);
   const [toast, setToast] = useState(false);
 
-  const product = FEATURED_PRODUCTS.find((p) => p.id === Number(id));
+  const product = products.find((p) => p.id === id);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -344,25 +346,28 @@ export default function ProductDetails() {
     : 0;
 
   // Similar: same category, excluding this product (fill with others if needed)
-  const similar = FEATURED_PRODUCTS.filter(
-    (p) => p.id !== product.id && p.category === product.category,
-  )
+  const similar = products
+    .filter(
+      (p: Product) => p.id !== product.id && p.category === product.category,
+    )
     .concat(
-      FEATURED_PRODUCTS.filter(
-        (p) => p.id !== product.id && p.category !== product.category,
+      products.filter(
+        (p: Product) => p.id !== product.id && p.category !== product.category,
       ),
     )
     .slice(0, 4);
 
   // People also buy: 4 products different from current + similar set
-  const similarIds = new Set([product.id, ...similar.map((p) => p.id)]);
-  const alsoBy = FEATURED_PRODUCTS.filter((p) => !similarIds.has(p.id)).slice(
-    0,
-    4,
-  );
+  const similarIds = new Set([
+    product.id,
+    ...similar.map((p: Product) => p.id),
+  ]);
+  const alsoBy = products
+    .filter((p: Product) => !similarIds.has(p.id))
+    .slice(0, 4);
 
   // Pad if fewer than 4
-  const fillFrom = FEATURED_PRODUCTS.filter((p) => p.id !== product.id);
+  const fillFrom = products.filter((p: Product) => p.id !== product.id);
   function padTo4(arr: Product[]) {
     if (arr.length >= 4) return arr.slice(0, 4);
     const extras = fillFrom.filter((p) => !arr.find((a) => a.id === p.id));
@@ -373,7 +378,9 @@ export default function ProductDetails() {
   const alsoSection = padTo4(
     alsoBy.length < 4
       ? alsoBy.concat(
-          fillFrom.filter((p) => !alsoBy.find((a) => a.id === p.id)),
+          fillFrom.filter(
+            (p: Product) => !alsoBy.find((a: Product) => a.id === p.id),
+          ),
         )
       : alsoBy,
   );

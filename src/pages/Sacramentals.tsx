@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
-import { type Product, FEATURED_PRODUCTS } from "../lib/products";
+import { type Product } from "../lib/products";
 import { useCart } from "../context/CartContext";
+import { useFeaturedProducts } from "../lib/hooks";
 
 // ── Sacramental categories and their products ──────────────────────────────────
 const SACRAMENTAL_CATEGORIES = [
@@ -44,10 +45,6 @@ const SACRAMENTAL_CATEGORIES = [
 ];
 
 const SACRAMENTAL_CAT_NAMES = ["Rosaries", "Statues", "Candles", "Jewelry"];
-
-const SACRAMENTAL_PRODUCTS = FEATURED_PRODUCTS.filter((p) =>
-  SACRAMENTAL_CAT_NAMES.includes(p.category),
-);
 
 // ── What are Sacramentals? ─────────────────────────────────────────────────────
 const CATECHISM_POINTS = [
@@ -335,13 +332,19 @@ function SacramentalProductCard({
 // ── Page ───────────────────────────────────────────────────────────────────────
 export default function Sacramentals() {
   const { addToCart } = useCart();
+  const { products } = useFeaturedProducts();
   const [activeCategory, setActiveCategory] = useState<string>("all");
+
+  const sacramentalProducts = products.filter((p: Product) =>
+    SACRAMENTAL_CAT_NAMES.includes(p.category),
+  );
 
   const filteredProducts =
     activeCategory === "all"
-      ? SACRAMENTAL_PRODUCTS
-      : SACRAMENTAL_PRODUCTS.filter(
-          (p) => p.category.toLowerCase() === activeCategory.toLowerCase(),
+      ? sacramentalProducts
+      : sacramentalProducts.filter(
+          (p: Product) =>
+            p.category.toLowerCase() === activeCategory.toLowerCase(),
         );
 
   function handleAddToCart(product: Product) {
