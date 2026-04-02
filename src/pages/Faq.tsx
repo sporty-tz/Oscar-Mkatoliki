@@ -1,130 +1,9 @@
 import { useState } from "react";
 import AppLayout from "../components/layout/AppLayout";
-
-interface FaqItem {
-  q: string;
-  a: string;
-}
-interface FaqGroup {
-  category: string;
-  icon: string;
-  items: FaqItem[];
-}
-
-const faqData: FaqGroup[] = [
-  {
-    category: "Orders & Payment",
-    icon: "🛒",
-    items: [
-      {
-        q: "How do I place an order?",
-        a: "Browse our catalogue, add items to your cart, proceed to checkout, enter your delivery details and complete payment. You will receive an email confirmation immediately.",
-      },
-      {
-        q: "What payment methods are accepted?",
-        a: "We accept M-Pesa, Tigo Pesa, Airtel Money, and debit/credit cards (Visa & Mastercard). All transactions are secured with 256-bit SSL encryption.",
-      },
-      {
-        q: "Can I modify or cancel my order?",
-        a: "You can cancel or modify an order within 1 hour of placing it by contacting us on WhatsApp or email. Once the order is packed it can no longer be changed.",
-      },
-      {
-        q: "How do I track my order?",
-        a: "Visit the Track Order page and enter your order number and email address. You can also log into your account and view Order History for live status updates.",
-      },
-    ],
-  },
-  {
-    category: "Shipping & Delivery",
-    icon: "🚚",
-    items: [
-      {
-        q: "Which areas do you deliver to?",
-        a: "We deliver to all regions of Tanzania including Dar es Salaam, Mwanza, Arusha, Dodoma, Zanzibar and more. International shipping is available on request.",
-      },
-      {
-        q: "How long does delivery take?",
-        a: "Dar es Salaam: 1–2 business days. Other mainland regions: 3–5 business days. Zanzibar: 2–4 business days. International orders: 7–14 business days.",
-      },
-      {
-        q: "Is there a minimum order for free shipping?",
-        a: "Yes! Orders of TZS 50,000 or more qualify for free standard shipping within mainland Tanzania. Zanzibar and international orders carry a flat shipping fee.",
-      },
-      {
-        q: "Can I choose a specific delivery time?",
-        a: "Currently we do not offer scheduled time-slot delivery. Our couriers deliver during business hours (8 AM – 6 PM). We will notify you before dispatch.",
-      },
-    ],
-  },
-  {
-    category: "Returns & Refunds",
-    icon: "↩️",
-    items: [
-      {
-        q: "What is your return policy?",
-        a: "Unused, unopened items in original condition can be returned within 7 days of delivery. Religious artefacts, personalised items and digital downloads are non-returnable.",
-      },
-      {
-        q: "How do I start a return?",
-        a: "Contact our support team via WhatsApp or email with your order number and photos of the item. We will arrange a collection or advise you how to send it back.",
-      },
-      {
-        q: "When will I receive my refund?",
-        a: "Refunds are processed within 3–5 business days after we receive and inspect the returned item. Mobile money refunds typically appear within 24 hours of processing.",
-      },
-      {
-        q: "What if I received a wrong or damaged item?",
-        a: "We sincerely apologise. Please send us a photo and your order number within 48 hours of delivery. We will arrange a free replacement or full refund immediately.",
-      },
-    ],
-  },
-  {
-    category: "Products & Faith Resources",
-    icon: "📿",
-    items: [
-      {
-        q: "Are all products officially approved religious items?",
-        a: "Yes. We source our religious items — rosaries, crucifixes, statues, and prayer books — from trusted Catholic suppliers and ensure they meet Church-approved standards.",
-      },
-      {
-        q: "Do you sell Oscar Mkatoliki music albums physically?",
-        a: "Yes! We carry signed physical CDs and limited-edition vinyl for select albums. Digital downloads are also available for instant purchase.",
-      },
-      {
-        q: "Can I request a product that is out of stock?",
-        a: "Yes. Use the 'Notify Me' button on the product page, or contact us. We restock popular items regularly and will notify you when available.",
-      },
-      {
-        q: "Do you offer gift wrapping?",
-        a: "Yes, gift wrapping is available at checkout for a small fee of TZS 2,500. You can add a personalised message card as well.",
-      },
-    ],
-  },
-  {
-    category: "Account & Privacy",
-    icon: "👤",
-    items: [
-      {
-        q: "How do I create an account?",
-        a: "Click 'Sign In' in the top navigation, then select 'Create Account'. Enter your name, email and a secure password. You will receive a verification email to confirm.",
-      },
-      {
-        q: "I forgot my password. What should I do?",
-        a: "On the Sign In page, click 'Forgot password?' and enter your email. You will receive a password-reset link. Check your spam folder if it doesn't arrive within a few minutes.",
-      },
-      {
-        q: "How is my personal data used?",
-        a: "We use your information only to process orders, send order updates and improve your shopping experience. We never sell your data to third parties. See our Privacy Policy for full details.",
-      },
-      {
-        q: "Can I delete my account?",
-        a: "Yes. Email hello@oscarmkatoliki.co.tz from your registered address and request account deletion. We will process this within 7 business days and confirm via email.",
-      },
-    ],
-  },
-];
+import { useFaqs } from "../lib/hooks";
 
 export default function FAQ() {
+  const { groups } = useFaqs();
   const [active, setActive] = useState<{ [key: string]: boolean }>({});
 
   const toggle = (key: string) => {
@@ -179,7 +58,7 @@ export default function FAQ() {
       <div
         style={{ maxWidth: 820, margin: "0 auto", padding: "60px 24px 80px" }}
       >
-        {faqData.map((group) => (
+        {groups.map((group) => (
           <div key={group.category} style={{ marginBottom: 44 }}>
             <div
               style={{
@@ -203,8 +82,8 @@ export default function FAQ() {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {group.items.map((item, i) => {
-                const key = `${group.category}-${i}`;
+              {group.items.map((item) => {
+                const key = item.id;
                 const open = !!active[key];
                 return (
                   <div
@@ -240,7 +119,7 @@ export default function FAQ() {
                           lineHeight: 1.4,
                         }}
                       >
-                        {item.q}
+                        {item.question}
                       </span>
                       <span
                         style={{
@@ -271,7 +150,7 @@ export default function FAQ() {
                             lineHeight: 1.75,
                           }}
                         >
-                          {item.a}
+                          {item.answer}
                         </p>
                       </div>
                     )}

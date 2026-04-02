@@ -1,149 +1,58 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { type Product, FEATURED_PRODUCTS } from "../lib/products";
+import { type Product } from "../lib/products";
 import AppLayout from "../components/layout/AppLayout";
 import { useCart } from "../context/CartContext";
+import {
+  useTickerText,
+  useHomepageSection,
+  useCategories,
+  useFeaturedProducts,
+} from "../lib/hooks";
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
-const SLIDES = [
-  {
-    id: 1,
-    image: "/Slider/Pope-leo-xiv.png",
-    subheading: "Words of the Holy Father",
-    heading: "Walk in Hope",
-    quote:
-      "\u201cWe are pilgrims on a journey of faith. Let us walk together in hope, in charity, and in the joy of the Gospel, building a world of fraternity and peace.\u201d",
-    attribution: "\u2014 Pope Leo XIV",
-    cta: "Explore Faith Resources",
-    bg: "linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%)",
-    accent: "#D4AF37",
-  },
-  {
-    id: 2,
-    image: "/Slider/Hail-Mary.png",
-    subheading: "Ave Maria",
-    heading: "Full of Grace",
-    quote:
-      "\u201cHail Mary, full of grace, the Lord is with thee. Blessed art thou among women, and blessed is the fruit of thy womb, Jesus.\u201d",
-    attribution: "\u2014 Luke 1:28, The Angel Gabriel",
-    cta: "Shop Rosaries & Devotionals",
-    bg: "linear-gradient(135deg, #1e0a3c 0%, #3b1260 60%, #5c1f8a 100%)",
-    accent: "#e8c8ff",
-  },
-  {
-    id: 3,
-    image: "/Slider/Christ-the-king.png",
-    subheading: "Christ the King",
-    heading: "The Way & the Life",
-    quote:
-      "\u201cI am the way, and the truth, and the life. No one comes to the Father except through me. Let your hearts not be troubled.\u201d",
-    attribution: "\u2014 Jesus Christ, John 14:6",
-    cta: "Shop Sacred Items",
-    bg: "linear-gradient(135deg, #1b3a2d 0%, #2d5a3d 60%, #1a4d33 100%)",
-    accent: "#C9A84C",
-  },
-];
+// ─── Types ────────────────────────────────────────────────────────────────────
+interface SlideItem {
+  id: number;
+  image: string;
+  subheading: string;
+  heading: string;
+  quote: string;
+  attribution: string;
+  cta: string;
+  bg: string;
+  accent: string;
+}
+interface PromoItem {
+  id: number;
+  brand: string;
+  headline: string;
+  subtext: string;
+  cta: string;
+  gradient: string;
+  accent: string;
+  badge?: string;
+  icon: string;
+}
 
-const CATEGORIES = [
-  {
-    id: 1,
-    name: "Music & Audio",
-    image: "/Categories/Music-1.png",
-    color: "#e8f4fc",
-  },
-  {
-    id: 2,
-    name: "Books & Bibles",
-    image: "/Categories/Books-1.png",
-    color: "#fff3cd",
-  },
-  {
-    id: 3,
-    name: "Rosaries",
-    image: "/Categories/Rosary-1.png",
-    color: "#fce4ec",
-  },
-  {
-    id: 4,
-    name: "Statues",
-    image: "/Categories/Statue-1.png",
-    color: "#d4edda",
-  },
-  {
-    id: 5,
-    name: "Candles",
-    image: "/Categories/Candle-1.png",
-    color: "#fff9c4",
-  },
-  {
-    id: 6,
-    name: "Apparel",
-    image: "/Categories/Apparel-1.png",
-    color: "#e2d9f3",
-  },
-  { id: 7, name: "Gifts", image: "/Categories/Gifts-1.png", color: "#fce0c8" },
-  {
-    id: 8,
-    name: "Children's",
-    image: "/Categories/Children-1.png",
-    color: "#e8f5e9",
-  },
-  {
-    id: 9,
-    name: "Jewelry",
-    image: "/Categories/Jewerly-1.png",
-    color: "#fff8e1",
-  },
-  {
-    id: 10,
-    name: "Sacramentals",
-    image: "/Categories/Sacramentals-1.png",
-    color: "#e3f2fd",
-  },
-];
-
-const PROMO_BANNERS = [
-  {
-    id: 1,
-    brand: "Sacred Sounds",
-    headline: "New Albums Just Dropped",
-    subtext: "Praise & Worship · Gospel · Devotional",
-    cta: "Listen & Shop",
-    gradient: "linear-gradient(135deg, #e8edff 0%, #c9d4ff 100%)",
-    accent: "#3b5bdb",
-    badge: "NEW",
-    icon: "🎵",
-  },
-  {
-    id: 2,
-    brand: "Holy Scripture",
-    headline: "Up to 30% Off Bibles",
-    subtext: "Catholic, Protestant & Study Editions",
-    cta: "Shop Bibles",
-    gradient: "linear-gradient(135deg, #fff8e1 0%, #fde089 100%)",
-    accent: "#9a6a00",
-    badge: "30% OFF",
-    icon: "📖",
-  },
-  {
-    id: 3,
-    brand: "Sacred Gifts",
-    headline: "Easter Collection",
-    subtext: "Rosaries, Statues & Blessed Items",
-    cta: "Shop Easter",
-    gradient: "linear-gradient(135deg, #e8f5ee 0%, #bbedd3 100%)",
-    accent: "#1b6b3a",
-    badge: "SEASONAL",
-    icon: "✝️",
-  },
-];
-
-// FEATURED_PRODUCTS imported from ../lib/products
+/** Category background colours keyed by slug — presentational only */
+const CAT_COLOR_MAP: Record<string, string> = {
+  "music-audio": "#e8f4fc",
+  "books-bibles": "#fff3cd",
+  rosaries: "#fce4ec",
+  statues: "#d4edda",
+  candles: "#fff9c4",
+  apparel: "#e2d9f3",
+  gifts: "#fce0c8",
+  childrens: "#e8f5e9",
+  jewelry: "#fff8e1",
+  sacramentals: "#e3f2fd",
+};
 
 // ─── Scrolling Ticker (Nykaa-style infinite marquee between nav and hero) ─────
 function ScrollingTicker() {
-  const segment =
-    "✝  NEW ALBUM OUT NOW  ·  FREE SHIPPING ON ORDERS ABOVE TZS 50,000  ·  EASTER COLLECTION IS LIVE  ·  30% OFF ALL BIBLES  ·  SACRED GIFT SETS NOW IN STOCK  ·  ROSARIES FROM TZS 8,000  ·  NEW DEVOTIONAL BOOKS JUST ARRIVED  ·  ";
+  const segment = useTickerText(
+    "✝  NEW ALBUM OUT NOW  ·  FREE SHIPPING ON ORDERS ABOVE TZS 50,000  ·  EASTER COLLECTION IS LIVE  ·  30% OFF ALL BIBLES  ·  SACRED GIFT SETS NOW IN STOCK  ·  ROSARIES FROM TZS 8,000  ·  NEW DEVOTIONAL BOOKS JUST ARRIVED  ·  ",
+  );
   return (
     <div
       style={{
@@ -164,17 +73,20 @@ function ScrollingTicker() {
 
 // ─── Hero Banner Carousel ─────────────────────────────────────────────────────
 function HeroBanner() {
+  const slides = useHomepageSection<SlideItem>("hero_slides");
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
+    if (slides.length === 0) return;
     const t = setInterval(
-      () => setCurrent((c) => (c + 1) % SLIDES.length),
+      () => setCurrent((c) => (c + 1) % slides.length),
       5000,
     );
     return () => clearInterval(t);
-  }, []);
+  }, [slides.length]);
 
-  const slide = SLIDES[current];
+  if (slides.length === 0) return null;
+  const slide = slides[current];
 
   return (
     <section
@@ -331,7 +243,7 @@ function HeroBanner() {
           zIndex: 10,
         }}
       >
-        {SLIDES.map((_, i) => (
+        {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrent(i)}
@@ -354,6 +266,7 @@ function HeroBanner() {
 
 // ─── Featured Categories ──────────────────────────────────────────────────────
 function FeaturedCategories() {
+  const { categories } = useCategories();
   return (
     <section
       className="section-pad"
@@ -408,10 +321,10 @@ function FeaturedCategories() {
             gap: 12,
           }}
         >
-          {CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <a
               key={cat.id}
-              href={`#${cat.name}`}
+              href={`#${cat.slug}`}
               className="cat-card"
               style={{
                 textDecoration: "none",
@@ -442,7 +355,7 @@ function FeaturedCategories() {
                 style={{
                   width: "100%",
                   aspectRatio: "1 / 1",
-                  background: cat.color,
+                  background: CAT_COLOR_MAP[cat.slug] ?? "#f5f5f5",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -452,7 +365,7 @@ function FeaturedCategories() {
                 }}
               >
                 <img
-                  src={cat.image}
+                  src={cat.image_url ?? ""}
                   alt={cat.name}
                   style={{
                     width: "100%",
@@ -516,6 +429,7 @@ function FeaturedCategories() {
 
 // ─── Promo Banners (Nykaa 3-col layout) ──────────────────────────────────────
 function PromoBanners() {
+  const banners = useHomepageSection<PromoItem>("promo_banners");
   return (
     <section
       className="section-pad"
@@ -578,7 +492,7 @@ function PromoBanners() {
             gap: 20,
           }}
         >
-          {PROMO_BANNERS.map((b) => (
+          {banners.map((b) => (
             <div
               key={b.id}
               className="promo-card"
@@ -1060,6 +974,7 @@ function FeaturedProducts({
 }: {
   onAddToCart: (p: Product) => void;
 }) {
+  const { products, loading } = useFeaturedProducts();
   return (
     <section
       className="section-pad"
@@ -1113,9 +1028,21 @@ function FeaturedProducts({
             gap: 20,
           }}
         >
-          {FEATURED_PRODUCTS.map((p) => (
-            <ProductCard key={p.id} product={p} onAddToCart={onAddToCart} />
-          ))}
+          {loading
+            ? Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  style={{
+                    background: "#f5f5f5",
+                    borderRadius: 16,
+                    height: 320,
+                    animation: "pulse 1.5s ease-in-out infinite",
+                  }}
+                />
+              ))
+            : products.map((p) => (
+                <ProductCard key={p.id} product={p} onAddToCart={onAddToCart} />
+              ))}
         </div>
       </div>
     </section>

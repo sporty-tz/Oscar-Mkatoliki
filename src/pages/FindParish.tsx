@@ -1,95 +1,27 @@
 import { useState } from "react";
 import AppLayout from "../components/layout/AppLayout";
-
-const parishes = [
-  {
-    name: "Cathedral of Saint Joseph",
-    region: "Dar es Salaam",
-    area: "Msimbazi, Ilala",
-    phone: "+255 22 211 5678",
-    massTimes: "Sun: 7AM, 9AM, 11AM • Sat: 5PM",
-    type: "Cathedral",
-  },
-  {
-    name: "Holy Cross Parish",
-    region: "Dar es Salaam",
-    area: "Oyster Bay",
-    phone: "+255 22 266 9900",
-    massTimes: "Sun: 8AM, 10AM • Weekday: 7AM",
-    type: "Parish",
-  },
-  {
-    name: "Our Lady of the Angels",
-    region: "Dar es Salaam",
-    area: "Kimara",
-    phone: "+255 22 244 3210",
-    massTimes: "Sun: 7AM, 9:30AM • Sat: 6PM",
-    type: "Parish",
-  },
-  {
-    name: "St. Peter & Paul Parish",
-    region: "Arusha",
-    area: "Arusha Town Centre",
-    phone: "+255 27 254 4456",
-    massTimes: "Sun: 7AM, 9AM, 11AM",
-    type: "Parish",
-  },
-  {
-    name: "Christ the King Cathedral",
-    region: "Mwanza",
-    area: "Mwanza City",
-    phone: "+255 28 250 0123",
-    massTimes: "Sun: 8AM, 10AM • Sat: 5PM",
-    type: "Cathedral",
-  },
-  {
-    name: "Blessed Sacrament Parish",
-    region: "Dodoma",
-    area: "Dodoma City Centre",
-    phone: "+255 26 232 5789",
-    massTimes: "Sun: 7AM, 9AM",
-    type: "Parish",
-  },
-  {
-    name: "St. Augustine Parish",
-    region: "Moshi",
-    area: "Moshi Town",
-    phone: "+255 27 275 6634",
-    massTimes: "Sun: 7AM, 10AM • Sat: 5:30PM",
-    type: "Parish",
-  },
-  {
-    name: "Our Lady of Fatima",
-    region: "Zanzibar",
-    area: "Stone Town",
-    phone: "+255 24 223 4567",
-    massTimes: "Sun: 8AM, 10AM",
-    type: "Parish",
-  },
-];
-
-const regions = [
-  "All Regions",
-  "Dar es Salaam",
-  "Arusha",
-  "Mwanza",
-  "Dodoma",
-  "Moshi",
-  "Zanzibar",
-];
+import { useParishes } from "../lib/hooks";
 
 export default function FindParish() {
+  const { parishes } = useParishes();
   const [search, setSearch] = useState("");
   const [region, setRegion] = useState("All Regions");
+
+  const regions = [
+    "All Regions",
+    ...Array.from(
+      new Set(parishes.map((p) => p.region ?? "").filter(Boolean)),
+    ).sort(),
+  ];
 
   const filtered = parishes.filter((p) => {
     const matchRegion = region === "All Regions" || p.region === region;
     const q = search.toLowerCase();
     const matchSearch =
       !q ||
-      p.name.toLowerCase().includes(q) ||
-      p.area.toLowerCase().includes(q) ||
-      p.region.toLowerCase().includes(q);
+      (p.name ?? "").toLowerCase().includes(q) ||
+      (p.area ?? "").toLowerCase().includes(q) ||
+      (p.region ?? "").toLowerCase().includes(q);
     return matchRegion && matchSearch;
   });
 
@@ -291,7 +223,7 @@ export default function FindParish() {
           >
             {filtered.map((p) => (
               <div
-                key={p.name}
+                key={p.id}
                 style={{
                   background: "#fff",
                   borderRadius: 16,
@@ -330,7 +262,7 @@ export default function FindParish() {
                         marginBottom: 8,
                       }}
                     >
-                      ✝ {p.type}
+                      ✝ {p.type ?? "Parish"}
                     </span>
                     <h3
                       style={{
@@ -357,7 +289,9 @@ export default function FindParish() {
                   >
                     <span style={{ fontSize: 14, flexShrink: 0 }}>📍</span>
                     <p style={{ margin: 0, fontSize: 13, color: "#555" }}>
-                      {p.area}, {p.region}
+                      {p.area ?? ""}
+                      {p.area && p.region ? ", " : ""}
+                      {p.region ?? ""}
                     </p>
                   </div>
                   <div
@@ -369,7 +303,7 @@ export default function FindParish() {
                   >
                     <span style={{ fontSize: 14, flexShrink: 0 }}>🕐</span>
                     <p style={{ margin: 0, fontSize: 12.5, color: "#555" }}>
-                      {p.massTimes}
+                      {p.mass_times}
                     </p>
                   </div>
                   <div

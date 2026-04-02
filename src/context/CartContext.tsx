@@ -4,7 +4,7 @@ import { type Product } from "../lib/products";
 interface CartContextType {
   cartItems: Product[];
   addToCart: (p: Product) => void;
-  removeFromCart: (id: number) => void;
+  removeFromCart: (id: string) => void;
   clearCart: () => void;
   cartOpen: boolean;
   setCartOpen: (open: boolean) => void;
@@ -21,7 +21,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCartOpen(true);
   }
 
-  function removeFromCart(id: number) {
+  function removeFromCart(id: string) {
     setCartItems((prev) => {
       const idx = prev.findIndex((p) => p.id === id);
       if (idx === -1) return prev;

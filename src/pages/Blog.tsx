@@ -1,93 +1,43 @@
+import { useState, useEffect } from "react";
 import AppLayout from "../components/layout/AppLayout";
+import { useBlogPosts } from "../lib/hooks";
 
-const posts = [
-  {
-    id: 1,
-    category: "Devotional",
-    title: "How the Rosary Transformed My Daily Commute in Dar es Salaam",
-    excerpt:
-      "When traffic on Bagamoyo Road became unbearable, one Catholic bus driver discovered that the mysteries of the rosary turned what was frustration into deep prayer.",
-    author: "Sr. Agnes Mtoto",
-    date: "25 Mar 2026",
-    readTime: "5 min read",
-    emoji: "📿",
-    color: "#e8f3fb",
-  },
-  {
-    id: 2,
-    category: "Music",
-    title: "Sacred Praise Vol. 2 — A Track-by-Track Journey",
-    excerpt:
-      "Oscar Mkatoliki walks us through the spiritual and creative inspiration behind every song on his latest album — from a midnight vision in Mwanza to a choir in Dodoma.",
-    author: "Oscar Mkatoliki",
-    date: "20 Mar 2026",
-    readTime: "8 min read",
-    emoji: "🎵",
-    color: "#fdf4dc",
-  },
-  {
-    id: 3,
-    category: "Family Faith",
-    title:
-      "Raising Catholic Children in a Digital Age: A Tanzanian Parent's Guide",
-    excerpt:
-      "Three Catholic parents from Kinondoni, Arusha and Mwanza share practical, tested strategies for nurturing genuine faith in an age of smartphones and social media.",
-    author: "Community Contributors",
-    date: "15 Mar 2026",
-    readTime: "6 min read",
-    emoji: "👨‍👩‍👧",
-    color: "#eafbea",
-  },
-  {
-    id: 4,
-    category: "Liturgy",
-    title: "Understanding the Easter Triduum: A Beginner's Guide",
-    excerpt:
-      "Holy Thursday. Good Friday. Easter Vigil. What happens at each liturgy, why it matters, and how to participate fully — explained simply for every Catholic.",
-    author: "Fr. Benedikt Mwamba",
-    date: "10 Mar 2026",
-    readTime: "7 min read",
-    emoji: "🕯️",
-    color: "#fff0f0",
-  },
-  {
-    id: 5,
-    category: "Saints",
-    title:
-      "Blessed Isidore Bakanja: Uganda's Lay Martyr Who Belongs to All of Africa",
-    excerpt:
-      "The story of the young Congolese layworker who refused to remove his scapular and died proclaiming forgiveness — and why his feast day should matter to every East African Catholic.",
-    author: "David Kileo",
-    date: "3 Mar 2026",
-    readTime: "4 min read",
-    emoji: "✝",
-    color: "#f0f0ff",
-  },
-  {
-    id: 6,
-    category: "Products",
-    title: "The Best Catholic Gifts for a First Communion in Tanzania",
-    excerpt:
-      "From personalised rosaries to illustrated children's Bibles, we have curated the most meaningful, age-appropriate gifts for this unforgettable sacrament.",
-    author: "Editorial Team",
-    date: "28 Feb 2026",
-    readTime: "3 min read",
-    emoji: "🎁",
-    color: "#fdf4dc",
-  },
-];
+const CATEGORY_EMOJI: Record<string, string> = {
+  Devotional: "📿",
+  Music: "🎵",
+  "Family Faith": "👨‍👩‍👧",
+  Liturgy: "🕯️",
+  Saints: "✝",
+  Products: "🎁",
+};
 
-const categories = [
-  "All",
-  "Devotional",
-  "Music",
-  "Family Faith",
-  "Liturgy",
-  "Saints",
-  "Products",
-];
+function formatDate(iso: string | null) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
 
 export default function Blog() {
+  const { posts, loading } = useBlogPosts();
+  const [activeCategory, setActiveCategory] = useState("All");
+
+  const categories = [
+    "All",
+    ...Array.from(
+      new Set(posts.map((p) => p.blog_categories?.name ?? "")),
+    ).filter(Boolean),
+  ];
+
+  const filtered =
+    activeCategory === "All"
+      ? posts
+      : posts.filter((p) => p.blog_categories?.name === activeCategory);
+
+  const featured = filtered[0] ?? null;
+
   return (
     <AppLayout>
       {/* Hero */}
@@ -146,15 +96,16 @@ export default function Blog() {
             paddingBottom: 4,
           }}
         >
-          {categories.map((c, i) => (
+          {categories.map((c) => (
             <button
               key={c}
+              onClick={() => setActiveCategory(c)}
               style={{
                 padding: "8px 20px",
                 borderRadius: 24,
-                border: i === 0 ? "none" : "1.5px solid #ddd",
-                background: i === 0 ? "#1a1a2e" : "#fff",
-                color: i === 0 ? "#D4AF37" : "#555",
+                border: c === activeCategory ? "none" : "1.5px solid #ddd",
+                background: c === activeCategory ? "#1a1a2e" : "#fff",
+                color: c === activeCategory ? "#D4AF37" : "#555",
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: "pointer",
@@ -168,92 +119,105 @@ export default function Blog() {
         </div>
 
         {/* Featured post */}
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: 20,
-            border: "1px solid #ebebeb",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
-            overflow: "hidden",
-            marginBottom: 32,
-            display: "grid",
-            gridTemplateColumns: "1.4fr 1fr",
-            cursor: "pointer",
-          }}
-          className="blog-featured"
-        >
+        {loading ? (
           <div
             style={{
-              background: posts[0].color,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 80,
-              minHeight: 260,
+              background: "#f5f5f5",
+              borderRadius: 20,
+              height: 260,
+              marginBottom: 32,
             }}
+          />
+        ) : featured ? (
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 20,
+              border: "1px solid #ebebeb",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+              overflow: "hidden",
+              marginBottom: 32,
+              display: "grid",
+              gridTemplateColumns: "1.4fr 1fr",
+              cursor: "pointer",
+            }}
+            className="blog-featured"
           >
-            {posts[0].emoji}
-          </div>
-          <div style={{ padding: "36px 36px" }}>
-            <span
-              style={{
-                display: "inline-block",
-                background: "#fdf4dc",
-                color: "#C9A84C",
-                fontSize: 11,
-                fontWeight: 700,
-                padding: "4px 12px",
-                borderRadius: 20,
-                letterSpacing: "0.8px",
-                textTransform: "uppercase",
-                marginBottom: 14,
-              }}
-            >
-              Featured · {posts[0].category}
-            </span>
-            <h2
-              style={{
-                fontSize: 20,
-                fontWeight: 900,
-                color: "#1a1a2e",
-                margin: "0 0 12px",
-                lineHeight: 1.35,
-              }}
-            >
-              {posts[0].title}
-            </h2>
-            <p
-              style={{
-                fontSize: 14,
-                color: "#666",
-                lineHeight: 1.7,
-                margin: "0 0 20px",
-              }}
-            >
-              {posts[0].excerpt}
-            </p>
             <div
               style={{
+                background: featured.blog_categories?.color ?? "#f5f5f5",
                 display: "flex",
                 alignItems: "center",
-                gap: 14,
-                flexWrap: "wrap",
+                justifyContent: "center",
+                fontSize: 80,
+                minHeight: 260,
               }}
             >
-              <span style={{ fontSize: 12, color: "#999" }}>
-                {posts[0].author}
+              {CATEGORY_EMOJI[featured.blog_categories?.name ?? ""] ?? "✝"}
+            </div>
+            <div style={{ padding: "36px 36px" }}>
+              <span
+                style={{
+                  display: "inline-block",
+                  background: "#fdf4dc",
+                  color: "#C9A84C",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  padding: "4px 12px",
+                  borderRadius: 20,
+                  letterSpacing: "0.8px",
+                  textTransform: "uppercase",
+                  marginBottom: 14,
+                }}
+              >
+                Featured · {featured.blog_categories?.name ?? ""}
               </span>
-              <span style={{ fontSize: 12, color: "#ccc" }}>·</span>
-              <span style={{ fontSize: 12, color: "#999" }}>
-                {posts[0].date}
-              </span>
-              <span style={{ fontSize: 12, color: "#ccc" }}>·</span>
-              <span style={{ fontSize: 12, color: "#C9A84C", fontWeight: 600 }}>
-                {posts[0].readTime}
-              </span>
+              <h2
+                style={{
+                  fontSize: 20,
+                  fontWeight: 900,
+                  color: "#1a1a2e",
+                  margin: "0 0 12px",
+                  lineHeight: 1.35,
+                }}
+              >
+                {featured.title}
+              </h2>
+              <p
+                style={{
+                  fontSize: 14,
+                  color: "#666",
+                  lineHeight: 1.7,
+                  margin: "0 0 20px",
+                }}
+              >
+                {featured.excerpt}
+              </p>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                  flexWrap: "wrap",
+                }}
+              >
+                <span style={{ fontSize: 12, color: "#999" }}>
+                  {featured.blog_authors?.name ?? ""}
+                </span>
+                <span style={{ fontSize: 12, color: "#ccc" }}>·</span>
+                <span style={{ fontSize: 12, color: "#999" }}>
+                  {formatDate(featured.published_at)}
+                </span>
+                <span style={{ fontSize: 12, color: "#ccc" }}>·</span>
+                <span
+                  style={{ fontSize: 12, color: "#C9A84C", fontWeight: 600 }}
+                >
+                  {featured.read_time_mins} min read
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        ) : null}
 
         {/* Post grid */}
         <div
@@ -264,7 +228,7 @@ export default function Blog() {
           }}
           className="blog-grid"
         >
-          {posts.slice(1).map((post) => (
+          {filtered.slice(1).map((post) => (
             <article
               key={post.id}
               style={{
@@ -290,7 +254,7 @@ export default function Blog() {
             >
               <div
                 style={{
-                  background: post.color,
+                  background: post.blog_categories?.color ?? "#f5f5f5",
                   height: 130,
                   display: "flex",
                   alignItems: "center",
@@ -298,7 +262,7 @@ export default function Blog() {
                   fontSize: 52,
                 }}
               >
-                {post.emoji}
+                {CATEGORY_EMOJI[post.blog_categories?.name ?? ""] ?? "✝"}
               </div>
               <div style={{ padding: "18px 20px 22px" }}>
                 <span
@@ -315,7 +279,7 @@ export default function Blog() {
                     marginBottom: 10,
                   }}
                 >
-                  {post.category}
+                  {post.blog_categories?.name ?? ""}
                 </span>
                 <h3
                   style={{
@@ -351,13 +315,13 @@ export default function Blog() {
                   }}
                 >
                   <span style={{ fontSize: 11, color: "#bbb" }}>
-                    {post.date}
+                    {formatDate(post.published_at)}
                   </span>
                   <span style={{ color: "#ddd" }}>·</span>
                   <span
                     style={{ fontSize: 11, color: "#C9A84C", fontWeight: 600 }}
                   >
-                    {post.readTime}
+                    {post.read_time_mins} min read
                   </span>
                 </div>
               </div>

@@ -1,53 +1,9 @@
 import React, { useState } from "react";
 import AppLayout from "../components/layout/AppLayout";
-
-const TIERS = [
-  { amount: 5000, label: "TZS 5,000", desc: "Light a Candle", icon: "🕯️" },
-  {
-    amount: 10000,
-    label: "TZS 10,000",
-    desc: "Fund a Prayer Book",
-    icon: "📖",
-  },
-  {
-    amount: 25000,
-    label: "TZS 25,000",
-    desc: "Support a Family's Rosary",
-    icon: "📿",
-  },
-  { amount: 50000, label: "TZS 50,000", desc: "Sponsor an Album", icon: "🎵" },
-  {
-    amount: 100000,
-    label: "TZS 100,000",
-    desc: "Equip a Parish Library",
-    icon: "⛪",
-  },
-];
-
-const CAUSES = [
-  {
-    icon: "🎵",
-    title: "Catholic Music Ministry",
-    desc: "Support original Swahili and English worship music recorded and produced in Tanzania. Your gift funds studio time, musicians, and distribution so that praise reaches every corner of the country.",
-  },
-  {
-    icon: "📖",
-    title: "Bibles & Devotionals",
-    desc: "Many families cannot afford a Bible. Donations enable us to procure and distribute Catholic Bibles and devotional books to parishes, schools, and underserved communities across Tanzania.",
-  },
-  {
-    icon: "⛪",
-    title: "Parish Outreach",
-    desc: "From rural chapels to urban centres, your support helps us bring faith resources, music events, and catechesis materials to parishes that need them most.",
-  },
-  {
-    icon: "👶",
-    title: "Children's Faith Education",
-    desc: "Fund illustrated children's Bibles, catechism resources, and faith-based activity kits for Sunday schools and primary schools across the region.",
-  },
-];
+import { useDonationConfig } from "../lib/hooks";
 
 export default function Donations() {
+  const { tiers, causes } = useDonationConfig();
   const [selected, setSelected] = useState<number | null>(null);
   const [custom, setCustom] = useState("");
   const [method, setMethod] = useState<"mpesa" | "card" | "">("");
@@ -170,7 +126,7 @@ export default function Donations() {
               gap: 24,
             }}
           >
-            {CAUSES.map((cause) => (
+            {causes.map((cause) => (
               <div
                 key={cause.title}
                 style={{
@@ -339,7 +295,7 @@ export default function Donations() {
                   marginBottom: 12,
                 }}
               >
-                {TIERS.map((tier) => (
+                {tiers.map((tier) => (
                   <button
                     type="button"
                     key={tier.amount}
