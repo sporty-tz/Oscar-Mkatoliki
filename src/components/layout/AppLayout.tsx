@@ -442,7 +442,7 @@ function Header({
           }}
         >
           <img
-            src="/images/logo.png"
+            src="https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Logo/Logo.png"
             alt="Oscar Mkatoliki"
             style={{ height: 80, objectFit: "contain", display: "block" }}
           />
@@ -1406,7 +1406,7 @@ function Footer() {
         >
           <div className="footer-brand">
             <img
-              src="/images/logo.png"
+              src="https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Logo/Logo.png"
               alt="Oscar Mkatoliki"
               style={{
                 height: 56,

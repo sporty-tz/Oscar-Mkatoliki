@@ -76,7 +76,7 @@ export default function Register() {
       {/* Brand */}
       <div style={{ marginBottom: "20px", textAlign: "center" }}>
         <img
-          src="/images/logo.png"
+          src="https://pznwwbrwgpxyveqbqhiq.supabase.co/storage/v1/object/public/Web_images/Logo/Logo.png"
           alt="Oscar Mkatoliki"
           style={{
             height: "130px",
