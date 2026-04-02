@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AppLayout from "../components/layout/AppLayout";
 import { useDonationConfig } from "../lib/hooks";
+import { createDonation } from "../lib/orders";
 
 export default function Donations() {
   const { tiers, causes } = useDonationConfig();
@@ -10,6 +11,8 @@ export default function Donations() {
   const [submitted, setSubmitted] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [donating, setDonating] = useState(false);
+  const [donateError, setDonateError] = useState<string | null>(null);
 
   const displayAmount = selected
     ? selected.toLocaleString()
@@ -17,11 +20,31 @@ export default function Donations() {
       ? Number(custom.replace(/\D/g, "")).toLocaleString()
       : null;
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!selected && !custom) return;
     if (!method) return;
-    setSubmitted(true);
+    setDonating(true);
+    setDonateError(null);
+    try {
+      const amount = selected || Number(custom.replace(/\D/g, ""));
+      await createDonation({
+        amount,
+        donorName: name || undefined,
+        phone: method === "mpesa" ? phone : undefined,
+        paymentMethod: method as "mpesa" | "card",
+        cause: "General",
+      });
+      setSubmitted(true);
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.";
+      setDonateError(msg);
+    } finally {
+      setDonating(false);
+    }
   }
 
   return (
@@ -462,32 +485,53 @@ export default function Donations() {
                 />
               )}
 
+              {donateError && (
+                <div
+                  style={{
+                    background: "#fef2f2",
+                    border: "1px solid #fca5a5",
+                    borderRadius: 10,
+                    padding: "12px 16px",
+                    marginBottom: 16,
+                    color: "#b91c1c",
+                    fontSize: 13.5,
+                  }}
+                >
+                  {donateError}
+                </div>
+              )}
+
               <button
                 type="submit"
-                disabled={(!selected && !custom) || !method}
+                disabled={(!selected && !custom) || !method || donating}
                 style={{
                   width: "100%",
                   padding: "15px",
                   background:
-                    (!selected && !custom) || !method
+                    (!selected && !custom) || !method || donating
                       ? "#e0d9c7"
                       : "linear-gradient(135deg, #D4AF37, #C9A84C)",
-                  color: (!selected && !custom) || !method ? "#aaa" : "#1a1a2e",
+                  color:
+                    (!selected && !custom) || !method || donating
+                      ? "#aaa"
+                      : "#1a1a2e",
                   border: "none",
                   borderRadius: 12,
                   fontSize: 15,
                   fontWeight: 800,
                   cursor:
-                    (!selected && !custom) || !method
+                    (!selected && !custom) || !method || donating
                       ? "not-allowed"
                       : "pointer",
                   letterSpacing: "0.3px",
                   transition: "opacity 0.15s",
                 }}
               >
-                {displayAmount
-                  ? `Donate TZS ${displayAmount} →`
-                  : "Select an Amount to Continue"}
+                {donating
+                  ? "Processing…"
+                  : displayAmount
+                    ? `Donate TZS ${displayAmount} →`
+                    : "Select an Amount to Continue"}
               </button>
 
               <p

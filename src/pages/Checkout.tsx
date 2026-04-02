@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
 import { useCart } from "../context/CartContext";
 import type { Product } from "../lib/products";
+import { placeOrder } from "../lib/orders";
 
 type Step = 1 | 2 | 3;
 
@@ -42,6 +43,7 @@ export default function Checkout() {
   const [payMethod, setPayMethod] = useState<"mpesa" | "card">("mpesa");
   const [mpesaPhone, setMpesaPhone] = useState("");
   const [placing, setPlacing] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
 
   // Aggregate duplicate items
   const aggregated = cartItems.reduce<(Product & { qty: number })[]>(
@@ -61,9 +63,29 @@ export default function Checkout() {
   async function handlePlaceOrder(e: React.FormEvent) {
     e.preventDefault();
     setPlacing(true);
-    await new Promise((r) => setTimeout(r, 1400));
-    clearCart();
-    navigate("/order-confirmation");
+    setOrderError(null);
+    try {
+      const result = await placeOrder({
+        items: aggregated,
+        subtotal,
+        shipping,
+        total,
+        delivery,
+        paymentMethod: payMethod,
+        mpesaPhone: payMethod === "mpesa" ? mpesaPhone : undefined,
+      });
+      clearCart();
+      navigate(
+        `/order-confirmation?order=${encodeURIComponent(result.order_number)}`,
+      );
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.";
+      setOrderError(message);
+      setPlacing(false);
+    }
   }
 
   // Empty cart state
@@ -817,6 +839,23 @@ export default function Checkout() {
                       Secured with 256-bit SSL encryption
                     </span>
                   </div>
+
+                  {orderError && (
+                    <div
+                      style={{
+                        marginTop: 14,
+                        padding: "12px 16px",
+                        background: "#fff5f5",
+                        border: "1px solid #fecaca",
+                        borderRadius: 10,
+                        color: "#b91c1c",
+                        fontSize: 13,
+                        textAlign: "center",
+                      }}
+                    >
+                      {orderError}
+                    </div>
+                  )}
                 </form>
               </div>
             )}

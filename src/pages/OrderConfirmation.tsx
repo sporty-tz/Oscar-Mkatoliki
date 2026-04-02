@@ -1,10 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
+import { getOrder } from "../lib/orders";
 
 export default function OrderConfirmation() {
+  const [searchParams] = useSearchParams();
+  const orderParam = searchParams.get("order");
   const [orderNum] = useState(
-    () => `OM-${String(Math.floor(100000 + Math.random() * 900000))}`,
+    () =>
+      orderParam || `OM-${String(Math.floor(100000 + Math.random() * 900000))}`,
   );
+  const [orderData, setOrderData] = useState<{
+    total_amount: number;
+    subtotal: number;
+    delivery_fee: number;
+    created_at: string;
+    status: string;
+    payment_status: string;
+    order_items: {
+      product_name: string;
+      quantity: number;
+      unit_price: number;
+      subtotal: number;
+    }[];
+  } | null>(null);
+
+  useEffect(() => {
+    if (orderParam) {
+      getOrder(orderParam).then((data) => {
+        if (data) setOrderData(data as typeof orderData);
+      });
+    }
+  }, [orderParam]);
 
   return (
     <AppLayout>
@@ -137,6 +164,68 @@ export default function OrderConfirmation() {
               upon you.&rdquo; — Numbers 6:24–25
             </p>
           </div>
+
+          {/* Order items summary */}
+          {orderData && orderData.order_items.length > 0 && (
+            <div
+              style={{
+                background: "#fff",
+                border: "1px solid #f0f0f0",
+                borderRadius: 14,
+                padding: "20px 24px",
+                marginBottom: 32,
+                textAlign: "left",
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: "#1a1a2e",
+                  margin: "0 0 14px",
+                }}
+              >
+                Order Items
+              </h3>
+              {orderData.order_items.map((item, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    padding: "8px 0",
+                    borderBottom:
+                      i < orderData.order_items.length - 1
+                        ? "1px solid #f5f5f5"
+                        : "none",
+                    fontSize: 13,
+                  }}
+                >
+                  <span style={{ color: "#555" }}>
+                    {item.product_name} × {item.quantity}
+                  </span>
+                  <span style={{ fontWeight: 700, color: "#1a1a2e" }}>
+                    TZS {item.subtotal.toLocaleString()}
+                  </span>
+                </div>
+              ))}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "10px 0 0",
+                  marginTop: 8,
+                  borderTop: "1.5px solid #f0e8d0",
+                  fontSize: 15,
+                  fontWeight: 800,
+                  color: "#1a1a2e",
+                }}
+              >
+                <span>Total</span>
+                <span>TZS {orderData.total_amount.toLocaleString()}</span>
+              </div>
+            </div>
+          )}
 
           {/* Delivery info row */}
           <div
